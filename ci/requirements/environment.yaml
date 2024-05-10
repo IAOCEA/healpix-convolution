@@ -1,0 +1,9 @@
+name: healpix-indexing-tests
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - ipython
+  - pre-commit
+  - pytest
+  - pytest-reportlog

@@ -1,0 +1,8 @@
+name: healpix-indexing-docs
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - sphinx>=4
+  - sphinx_book_theme
+  - ipython
