@@ -111,15 +111,16 @@ def adjust_xyf(cx, cy, cf, nside):
         return -1, -1, -1
 
     bits = swap_arrays[nbnum][cf >> 2]
-    if bits & 1 > 0:
+    if bits & 1:
         nx = nside - cx - 1
     else:
         nx = cx
-    if bits & 2 > 0:
+    if bits & 2:
         ny = nside - cy - 1
     else:
         ny = cy
-    if bits & 4 > 0:
+
+    if bits & 4:
         nx, ny = ny, ny
 
     return nx, ny, nf
