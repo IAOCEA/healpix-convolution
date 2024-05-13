@@ -100,12 +100,10 @@ def adjust_xyf(cx, cy, cf, nside):
 
     if cy < 0:
         cy = cy + nside
-        nbnum -= 1
+        nbnum -= 3
     elif cy >= nside:
         cy = cy - nside
-        nbnum += 1
-    else:
-        cy = cy
+        nbnum += 3
 
     nf = face_neighbours[nbnum][cf]
     if nf < 0:
