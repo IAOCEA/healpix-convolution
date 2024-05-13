@@ -161,10 +161,14 @@ def neighbours(cell_ids, *, resolution, indexing_scheme, ring=1):
 
     x, y, face = cell_ids2xyf(cell_ids, nside=nside, indexing_scheme=indexing_scheme)
 
-    new_x, new_y, new_face = _neighbours(x, y, face, nside, offsets)
+    neighbour_x, neighbour_y, neighbour_face = _neighbours(x, y, face, nside, offsets)
 
     return xyf2cell_ids(
-        new_x, new_y, new_face, nside=nside, indexing_scheme=indexing_scheme
+        neighbour_x,
+        neighbour_y,
+        neighbour_face,
+        nside=nside,
+        indexing_scheme=indexing_scheme,
     )
 
 
