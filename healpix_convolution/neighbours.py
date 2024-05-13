@@ -135,10 +135,6 @@ def adjust_xyf(cx, cy, cf, nside):
 )
 def _neighbours(x, y, f, nside, offsets, nx, ny, nf):
     for index, (x_offset, y_offset) in enumerate(offsets):
-        cx = x + x_offset
-        cy = y + y_offset
-        cf = f
-
         cx, cy, cf = adjust_xyf(x + x_offset, y + y_offset, f, nside)
 
         nx[index] = cx
