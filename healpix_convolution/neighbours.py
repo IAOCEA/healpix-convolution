@@ -163,13 +163,14 @@ def neighbours(cell_ids, *, resolution, indexing_scheme, ring=1):
 
     neighbour_x, neighbour_y, neighbour_face = _neighbours(x, y, face, nside, offsets)
 
-    return xyf2cell_ids(
+    n_ = xyf2cell_ids(
         neighbour_x,
         neighbour_y,
         neighbour_face,
         nside=nside,
         indexing_scheme=indexing_scheme,
     )
+    return np.where(neighbour_face == -1, -1, n_)
 
 
 if __name__ == "__main__":
