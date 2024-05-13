@@ -160,7 +160,6 @@ def neighbours(cell_ids, *, resolution, indexing_scheme, ring=1):
     offsets = np.asarray(list(generate_offsets(ring=ring)), dtype="int8")
 
     x, y, face = cell_ids2xyf(cell_ids, nside=nside, indexing_scheme=indexing_scheme)
-
     neighbour_x, neighbour_y, neighbour_face = _neighbours(x, y, face, nside, offsets)
 
     n_ = xyf2cell_ids(
