@@ -121,7 +121,7 @@ def adjust_xyf(cx, cy, cf, nside):
         ny = cy
 
     if bits & 4:
-        nx, ny = ny, ny
+        nx, ny = ny, nx
 
     return nx, ny, nf
 
