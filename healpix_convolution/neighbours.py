@@ -87,6 +87,9 @@ def generate_offsets(ring):
 
 @numba.njit
 def adjust_xyf(cx, cy, cf, nside):
+    if (cx >= 0 and cx < nside) and (cy >= 0 and cy < nside):
+        return cx, cy, cf
+
     nbnum = 4
     if cx < 0:
         cx = cx + nside
@@ -94,8 +97,6 @@ def adjust_xyf(cx, cy, cf, nside):
     elif cx >= nside:
         cx = cx - nside
         nbnum += 1
-    else:
-        cx = cx
 
     if cy < 0:
         cy = cy + nside
