@@ -51,7 +51,7 @@ ignore = [
     "E501",
     "E731",
 ]
-fixable = ["I"]
+fixable = ["I", "TID252"]
 extend-safe-fixes = [
     "TID252",  # absolute imports
 ]
