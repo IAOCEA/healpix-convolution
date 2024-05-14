@@ -157,6 +157,11 @@ def neighbours(cell_ids, *, resolution, indexing_scheme, ring=1):
         plus their immediate neighbours (a total of 24 cells), and so on.
     """
     nside = 2**resolution
+    if ring > nside:
+        raise ValueError(
+            "rings containing more than the neighbouring base pixels are not supported"
+        )
+
     offsets = np.asarray(list(generate_offsets(ring=ring)), dtype="int8")
 
     x, y, face = cell_ids2xyf(cell_ids, nside=nside, indexing_scheme=indexing_scheme)
