@@ -20,8 +20,16 @@ def test_generate_offsets(ring):
 
 @pytest.mark.parametrize("resolution", [1, 2, 4, 6])
 @pytest.mark.parametrize("indexing_scheme", ["ring", "nested"])
-def test_neighbours_ring1_manual(resolution, indexing_scheme):
-    cell_ids = np.arange(12 * 4**resolution)
+@pytest.mark.parametrize("dask", [True, False])
+def test_neighbours_ring1_manual(resolution, indexing_scheme, dask):
+    if dask:
+        import dask.array as da
+
+        xp = da
+    else:
+        xp = np
+
+    cell_ids = xp.arange(12 * 4**resolution)
 
     actual = nb.neighbours(
         cell_ids, resolution=resolution, indexing_scheme=indexing_scheme, ring=1
@@ -29,9 +37,9 @@ def test_neighbours_ring1_manual(resolution, indexing_scheme):
 
     nside = 2**resolution
     nest = indexing_scheme == "nested"
-    expected = hp.get_all_neighbours(nside, cell_ids, nest=nest).T
+    expected = hp.get_all_neighbours(nside, np.asarray(cell_ids), nest=nest).T
 
-    actual_ = actual[:, 1:]
+    actual_ = np.asarray(actual[:, 1:])
 
     np.testing.assert_equal(actual_, expected)
 

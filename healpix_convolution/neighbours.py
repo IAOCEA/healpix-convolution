@@ -3,6 +3,14 @@ import numba
 import numpy as np
 from numba import int8, int32, int64
 
+try:
+    import dask.array as da
+
+    dask_array_type = (da.Array,)
+except ImportError:
+    dask_array_type = ()
+    da = None
+
 face_neighbours = np.array(
     [
         [8, 9, 10, 11, -1, -1, -1, -1, 10, 11, 8, 9],
@@ -133,13 +141,29 @@ def adjust_xyf(cx, cy, cf, nside):
     ],
     "(),(),(),(),(n,m)->(n),(n),(n)",
 )
-def _neighbours(x, y, f, nside, offsets, nx, ny, nf):
+def _neighbours_numba(x, y, f, nside, offsets, nx, ny, nf):
     for index, (x_offset, y_offset) in enumerate(offsets):
         cx, cy, cf = adjust_xyf(x + x_offset, y + y_offset, f, nside)
 
         nx[index] = cx
         ny[index] = cy
         nf[index] = cf
+
+
+def _neighbours(cell_ids, *, offsets, nside, indexing_scheme):
+    x, y, face = cell_ids2xyf(cell_ids, nside=nside, indexing_scheme=indexing_scheme)
+    neighbour_x, neighbour_y, neighbour_face = _neighbours_numba(
+        x, y, face, nside, offsets
+    )
+
+    n_ = xyf2cell_ids(
+        neighbour_x,
+        neighbour_y,
+        neighbour_face,
+        nside=nside,
+        indexing_scheme=indexing_scheme,
+    )
+    return np.where(neighbour_face == -1, -1, n_)
 
 
 def neighbours(cell_ids, *, resolution, indexing_scheme, ring=1):
@@ -164,17 +188,22 @@ def neighbours(cell_ids, *, resolution, indexing_scheme, ring=1):
 
     offsets = np.asarray(list(generate_offsets(ring=ring)), dtype="int8")
 
-    x, y, face = cell_ids2xyf(cell_ids, nside=nside, indexing_scheme=indexing_scheme)
-    neighbour_x, neighbour_y, neighbour_face = _neighbours(x, y, face, nside, offsets)
-
-    n_ = xyf2cell_ids(
-        neighbour_x,
-        neighbour_y,
-        neighbour_face,
-        nside=nside,
-        indexing_scheme=indexing_scheme,
-    )
-    return np.where(neighbour_face == -1, -1, n_)
+    if isinstance(cell_ids, dask_array_type):
+        n_neighbours = (2 * ring + 1) ** 2
+        return da.map_blocks(
+            _neighbours,
+            cell_ids,
+            offsets=offsets,
+            nside=nside,
+            indexing_scheme=indexing_scheme,
+            new_axis=1,
+            chunks=cell_ids.chunks + (n_neighbours,),
+            dtype=cell_ids.dtype,
+        )
+    else:
+        return _neighbours(
+            cell_ids, offsets=offsets, nside=nside, indexing_scheme=indexing_scheme
+        )
 
 
 if __name__ == "__main__":
