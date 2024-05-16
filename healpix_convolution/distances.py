@@ -25,7 +25,7 @@ def _distances(a, b, axis, nside, nest):
     vec_b = np.where(mask[..., None], vec_b_, np.nan)
 
     dot_product = np.abs(np.sum(vec_a * vec_b, axis=axis))
-    cross_product = np.linalg.norm(np.cross(vec_a, vec_b, axis=-1), axis=axis)
+    cross_product = np.linalg.norm(np.cross(vec_a, vec_b, axis=axis), axis=axis)
 
     return np.arctan2(cross_product, dot_product)
 
@@ -41,7 +41,7 @@ def distances(neighbours, *, resolution, indexing_scheme="nested", axis=None):
         return da.map_blocks(
             _distances,
             neighbours[:, :1],
-            neighbours[:, 1:],
+            neighbours,
             axis=axis,
             nside=nside,
             nest=nest,
@@ -49,5 +49,5 @@ def distances(neighbours, *, resolution, indexing_scheme="nested", axis=None):
         )
     else:
         return _distances(
-            neighbours[:, :1], neighbours[:, 1:], axis=axis, nside=nside, nest=nest
+            neighbours[:, :1], neighbours, axis=axis, nside=nside, nest=nest
         )
