@@ -6,6 +6,16 @@ from hypothesis import given
 
 import healpix_convolution.neighbours as nb
 
+try:
+    import dask.array as da
+
+    has_dask = True
+except ImportError:
+    has_dask = False
+    da = None
+
+requires_dask = pytest.mark.skipif(not has_dask, reason="needs dask.array")
+
 
 @given(st.integers(min_value=0, max_value=300))
 def test_generate_offsets(ring):
@@ -20,11 +30,9 @@ def test_generate_offsets(ring):
 
 @pytest.mark.parametrize("resolution", [1, 2, 4, 6])
 @pytest.mark.parametrize("indexing_scheme", ["ring", "nested"])
-@pytest.mark.parametrize("dask", [True, False])
+@pytest.mark.parametrize("dask", [pytest.param(True, marks=requires_dask), False])
 def test_neighbours_ring1_manual(resolution, indexing_scheme, dask):
     if dask:
-        import dask.array as da
-
         xp = da
     else:
         xp = np
