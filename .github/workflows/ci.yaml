@@ -30,62 +30,63 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
+
       - uses: xarray-contrib/ci-trigger@v1
         id: detect-trigger
         with:
           keyword: "[skip-ci]"
 
-test:
-  name: ${{ matrix.os }} py${{ matrix.python-version }}
-  runs-on: ${{ matrix.os }}
-  needs: detect-ci-trigger
-  if: needs.detect-ci-trigger.outputs.triggered == 'false'
-  env:
-    FORCE_COLOR: 3
-    CONDA_ENV_FILE: "ci/requirements/environment.yaml"
-  defaults:
-    run:
-      shell: bash -l {0}
+  test:
+    name: ${{ matrix.os }} py${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    needs: detect-ci-trigger
+    if: needs.detect-ci-trigger.outputs.triggered == 'false'
+    env:
+      FORCE_COLOR: 3
+      CONDA_ENV_FILE: "ci/requirements/environment.yaml"
+    defaults:
+      run:
+        shell: bash -l {0}
 
-  strategy:
-    fail-fast: false
-    matrix:
-      os: ["ubuntu-latest", "macos-latest", "windows-latest"]
-      python-version: ["3.11", "3.12"]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest", "macos-latest", "windows-latest"]
+        python-version: ["3.11", "3.12"]
 
-  steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Setup micromamba
-      uses: mamba-org/setup-micromamba@v1
-      with:
-        environment-file: ci/requirements/environment.yaml
-        environment-name: healpix-convolution-tests
-        cache-environment: true
-        cache-environment-key: "${{runner.os}}-${{runner.arch}}-py${{matrix.python-version}}-${{env.TODAY}}-${{hashFiles(env.CONDA_ENV_FILE)}}"
-        create-args: >-
-          python=${{matrix.python-version}}
-          conda
+      - name: Setup micromamba
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: ci/requirements/environment.yaml
+          environment-name: healpix-convolution-tests
+          cache-environment: true
+          cache-environment-key: "${{runner.os}}-${{runner.arch}}-py${{matrix.python-version}}-${{env.TODAY}}-${{hashFiles(env.CONDA_ENV_FILE)}}"
+          create-args: >-
+            python=${{matrix.python-version}}
+            conda
 
-    - name: Install healpix-convolution
-      run: |
-        python -m pip install --no-deps -e .
+      - name: Install healpix-convolution
+        run: |
+          python -m pip install --no-deps -e .
 
-    - name: Version info
-      run: |
-        conda info -a
-        conda list
+      - name: Version info
+        run: |
+          conda info -a
+          conda list
 
-    - name: Restore cached hypothesis directory
-      uses: actions/cache@v4
-      with:
-        path: .hypothesis/
-        key: cache-hypothesis
-        enableCrossOsArchive: true
-        save-always: true
+      - name: Restore cached hypothesis directory
+        uses: actions/cache@v4
+        with:
+          path: .hypothesis/
+          key: cache-hypothesis
+          enableCrossOsArchive: true
+          save-always: true
 
-    - name: Run tests
-      run: |
-        python -m pytest --cov=healpix_convolution
+      - name: Run tests
+        run: |
+          python -m pytest --cov=healpix_convolution
