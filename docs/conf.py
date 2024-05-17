@@ -1,7 +1,7 @@
 # -- Project information -----------------------------------------------------
 import datetime as dt
 
-project = "healpix-indexing"
+project = "healpix-convolution"
 author = f"{project} developers"
 initial_year = "2024"
 year = dt.datetime.now().year
@@ -23,8 +23,8 @@ extensions = [
 ]
 
 extlinks = {
-    "issue": ("https://github.com/keewis/healpix-indexing/issues/%s", "GH%s"),
-    "pull": ("https://github.com/keewis/healpix-indexing/pull/%s", "PR%s"),
+    "issue": ("https://github.com/iaocea/healpix-convolution/issues/%s", "GH%s"),
+    "pull": ("https://github.com/iaocea/healpix-convolution/pull/%s", "PR%s"),
 }
 
 # Add any paths that contain templates here, relative to this directory.
