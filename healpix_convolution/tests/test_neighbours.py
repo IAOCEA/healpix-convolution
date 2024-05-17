@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from hypothesis import given
 
-import healpix_indexing.neighbours as nb
+import healpix_convolution.neighbours as nb
 
 
 @given(st.integers(min_value=0, max_value=300))
