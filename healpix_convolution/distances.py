@@ -31,6 +31,25 @@ def _distances(a, b, axis, nside, nest):
 
 
 def distances(neighbours, *, resolution, indexing_scheme="nested", axis=None):
+    """compute the angular great-circle distances between neighbours
+
+    Parameters
+    ----------
+    neighbours : array-like
+        The input cell ids.
+    resolution : int
+        The resolution of healpix pixelization.
+    indexing_scheme : {"nested", "ring"}, default: "nested"
+        The indexing scheme of the cell ids.
+    axis : int, optional
+        The axis used for the neighbours. If not given, assume the last dimension.
+
+    Returns
+    -------
+    distances : array-like
+        The great-circle distances in radians.
+    """
+
     if axis is None:
         axis = -1
 
