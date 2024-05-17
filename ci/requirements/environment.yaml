@@ -7,3 +7,11 @@ dependencies:
   - pre-commit
   - pytest
   - pytest-reportlog
+  - numba
+  - numpy
+  - healpy
+  - geopandas
+  - pandas
+  - xarray
+  - folium
+  - shapely
