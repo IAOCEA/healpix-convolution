@@ -1,4 +1,3 @@
-name: healpix-indexing-tests
 channels:
   - conda-forge
 dependencies:
@@ -7,3 +6,11 @@ dependencies:
   - pre-commit
   - pytest
   - pytest-reportlog
+  - numba
+  - numpy
+  - healpy
+  - geopandas
+  - pandas
+  - xarray
+  - folium
+  - shapely

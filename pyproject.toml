@@ -1,5 +1,5 @@
 [project]
-name = "healpix-indexing"
+name = "healpix-convolution"
 requires-python = ">= 3.12"
 license = {text = "Apache-2.0"}
 dependencies = []
@@ -10,7 +10,7 @@ requires = ["setuptools>=64.0", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["healpix_indexing"]
+packages = ["healpix_convolution"]
 
 [tool.setuptools_scm]
 fallback_version = "9999"
@@ -58,5 +58,5 @@ extend-safe-fixes = [
 
 
 [tool.ruff.lint.isort]
-known-first-party = ["healpix_indexing"]
+known-first-party = ["healpix_convolution"]
 known-third-party = []
