@@ -5,6 +5,7 @@ dependencies:
   - pre-commit
   - pytest
   - pytest-reportlog
+  - pytest-cov
   - numba
   - numpy
   - healpy
