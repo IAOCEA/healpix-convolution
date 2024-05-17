@@ -6,8 +6,10 @@ dependencies:
   - pytest
   - pytest-reportlog
   - pytest-cov
+  - hypothesis
   - numba
   - numpy
+  - dask
   - healpy
   - geopandas
   - pandas

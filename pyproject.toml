@@ -51,10 +51,10 @@ ignore = [
     "E501",
     "E731",
 ]
-fixable = ["I"]
 extend-safe-fixes = [
     "TID252",  # absolute imports
 ]
+fixable = ["I", "TID252"]
 
 
 [tool.ruff.lint.isort]
