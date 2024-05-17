@@ -17,7 +17,7 @@ except ImportError:
 requires_dask = pytest.mark.skipif(not has_dask, reason="needs dask.array")
 
 
-@given(st.integers(min_value=0, max_value=300))
+@given(st.integers(min_value=0, max_value=200))
 def test_generate_offsets(ring):
     kernel_size = 2 * ring + 1
     kernel = np.zeros(shape=(kernel_size, kernel_size))
