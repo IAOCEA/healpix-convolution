@@ -9,6 +9,7 @@ dependencies:
   - hypothesis
   - numba
   - numpy
+  - dask
   - healpy
   - geopandas
   - pandas
