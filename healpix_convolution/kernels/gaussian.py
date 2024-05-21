@@ -38,6 +38,7 @@ def gaussian_kernel(
     -----
     no dask support, yet
     """
+    # TODO: figure out whether there is a better way of defining the units of `sigma`
     cell_distance = hp.nside2resol(2**resolution, arcmin=False)
     ring = int((truncate * sigma / cell_distance) // 2)
 
@@ -49,6 +50,8 @@ def gaussian_kernel(
     sigma2 = sigma * sigma
     phi_x = np.exp(-0.5 / sigma2 * d**2)
 
+    # TODO (keewis): figure out a way to translate global healpix indices to local ones
+    # The kernel should still work for a subset of the full map.
     shape = (12 * 4**resolution, 12 * 4**resolution)
     kernel = create_sparse(cell_ids, nb, phi_x, shape=shape)
 
