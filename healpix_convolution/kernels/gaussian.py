@@ -14,6 +14,30 @@ def gaussian_kernel(
     sigma: float,
     truncate: float = 4.0,
 ):
+    """construct a gaussian kernel on the healpix grid
+
+    Parameters
+    ----------
+    cell_ids : array-like
+        The cell ids.
+    resolution : int
+        The healpix resolution
+    indexing_scheme : {"nested", "ring"}
+        The healpix indexing scheme
+    sigma : float
+        The standard deviation of the gaussian kernel
+    truncate : float, default: 4.0
+        Truncate the kernel after this many multiples of ``sigma``.
+
+    Returns
+    -------
+    kernel : sparse.COO
+        The constructed kernel
+
+    Notes
+    -----
+    no dask support, yet
+    """
     cell_distance = hp.nside2resol(2**resolution, arcmin=False)
     ring = int((truncate * sigma / cell_distance) // 2)
 
