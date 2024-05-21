@@ -10,7 +10,7 @@ on:
       - "ci/**"
       - ".github/**"
       - "/*" # covers files such as pyproject.toml
-      - "healpix_indexing/**"
+      - "healpix_convolution/**"
   workflow_dispatch: # allows triggering manually
 
 concurrency:
