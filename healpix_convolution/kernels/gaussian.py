@@ -56,4 +56,4 @@ def gaussian_kernel(
     kernel = create_sparse(cell_ids, nb, phi_x, shape=shape)
 
     # normalize
-    return kernel / np.sum(kernel, axis=1)
+    return kernel / np.sum(kernel, axis=1).todense()
