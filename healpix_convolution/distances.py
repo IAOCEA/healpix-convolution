@@ -30,7 +30,7 @@ def _distances(a, b, axis, nside, nest):
     return np.arctan2(cross_product, dot_product)
 
 
-def distances(neighbours, *, resolution, indexing_scheme="nested", axis=None):
+def angular_distances(neighbours, *, resolution, indexing_scheme="nested", axis=None):
     """compute the angular great-circle distances between neighbours
 
     Parameters

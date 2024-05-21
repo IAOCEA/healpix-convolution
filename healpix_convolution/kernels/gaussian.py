@@ -1,7 +1,7 @@
 import healpy as hp
 import numpy as np
 
-from healpix_convolution.distances import distances
+from healpix_convolution.distances import angular_distances
 from healpix_convolution.kernels.common import create_sparse
 from healpix_convolution.neighbours import neighbours
 
@@ -45,7 +45,7 @@ def gaussian_kernel(
     nb = neighbours(
         cell_ids, resolution=resolution, indexing_scheme=indexing_scheme, ring=ring
     )
-    d = distances(nb, resolution=resolution, indexing_scheme=indexing_scheme)
+    d = angular_distances(nb, resolution=resolution, indexing_scheme=indexing_scheme)
 
     sigma2 = sigma * sigma
     phi_x = np.exp(-0.5 / sigma2 * d**2)

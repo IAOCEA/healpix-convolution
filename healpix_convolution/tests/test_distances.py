@@ -12,6 +12,6 @@ import healpix_convolution.distances as hds
     ),
 )
 def test_distances_numpy(neighbours, expected):
-    actual = hds.distances(neighbours, resolution=2, indexing_scheme="nested")
+    actual = hds.angular_distances(neighbours, resolution=2, indexing_scheme="nested")
 
     np.testing.assert_allclose(actual, expected)
