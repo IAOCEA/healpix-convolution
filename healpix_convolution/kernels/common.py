@@ -16,4 +16,4 @@ def create_sparse(cell_ids, neighbours, weights, shape):
     weights_ = np.reshape(weights, -1)[mask]
     coords_ = coords[..., mask]
 
-    return sparse.COO(coords=coords_, data=weights_, shape=shape)
+    return sparse.COO(coords=coords_, data=weights_, shape=shape, fill_value=0)
