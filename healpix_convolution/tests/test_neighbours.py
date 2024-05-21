@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from hypothesis import given
 
-import healpix_convolution.neighbours as nb
+from healpix_convolution.neighbours import generate_offsets, neighbours
 
 try:
     import dask.array as da
@@ -22,7 +22,7 @@ def test_generate_offsets(ring):
     kernel_size = 2 * ring + 1
     kernel = np.zeros(shape=(kernel_size, kernel_size))
 
-    for x, y in nb.generate_offsets(ring):
+    for x, y in generate_offsets(ring):
         kernel[x + ring, y + ring] = 1
 
     assert np.sum(kernel) == kernel_size**2
@@ -39,7 +39,7 @@ def test_neighbours_ring1_manual(resolution, indexing_scheme, dask):
 
     cell_ids = xp.arange(12 * 4**resolution)
 
-    actual = nb.neighbours(
+    actual = neighbours(
         cell_ids, resolution=resolution, indexing_scheme=indexing_scheme, ring=1
     )
 
@@ -56,7 +56,7 @@ def test_neighbours_ring1_manual(resolution, indexing_scheme, dask):
 def test_neighbours_ring1(resolution, indexing_scheme):
     cell_ids = np.arange(12 * 4**resolution)
 
-    actual = nb.neighbours(
+    actual = neighbours(
         cell_ids, resolution=resolution, indexing_scheme=indexing_scheme, ring=1
     )
     nside = 2**resolution
