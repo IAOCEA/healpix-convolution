@@ -38,6 +38,13 @@ def gaussian_kernel(
     -----
     no dask support, yet
     """
+    if cell_ids.ndim != 1 or len(s for s in cell_ids.shape if s != 1) != 1:
+        raise ValueError(
+            f"cell ids must be 1-dimensional, but shape is: {cell_ids.shape}"
+        )
+
+    cell_ids = np.reshape(cell_ids, -1)
+
     # TODO: figure out whether there is a better way of defining the units of `sigma`
     cell_distance = hp.nside2resol(2**resolution, arcmin=False)
     ring = int((truncate * sigma / cell_distance) // 2)
