@@ -13,6 +13,7 @@ def gaussian_kernel(
     indexing_scheme: str,
     sigma: float,
     truncate: float = 4.0,
+    kernel_size: int | None = None,
 ):
     """construct a gaussian kernel on the healpix grid
 
@@ -28,6 +29,8 @@ def gaussian_kernel(
         The standard deviation of the gaussian kernel
     truncate : float, default: 4.0
         Truncate the kernel after this many multiples of ``sigma``.
+    kernel_size : int, optional
+        If given, determines the size of the kernel. In that case, ``truncate`` is ignored.
 
     Returns
     -------
@@ -46,8 +49,11 @@ def gaussian_kernel(
     cell_ids = np.reshape(cell_ids, -1)
 
     # TODO: figure out whether there is a better way of defining the units of `sigma`
-    cell_distance = hp.nside2resol(2**resolution, arcmin=False)
-    ring = int((truncate * sigma / cell_distance) // 2)
+    if kernel_size is not None:
+        ring = int(kernel_size / 2)
+    else:
+        cell_distance = hp.nside2resol(2**resolution, arcmin=False)
+        ring = int((truncate * sigma / cell_distance) // 2)
 
     nb = neighbours(
         cell_ids, resolution=resolution, indexing_scheme=indexing_scheme, ring=ring
