@@ -1,4 +1,5 @@
 import xarray as xr
+import xdggs  # noqa: F401
 
 from healpix_convolution.kernels import gaussian
 
@@ -30,14 +31,14 @@ def gaussian_kernel(
         gaussian.gaussian_kernel,
         cell_ids,
         kwargs={
-            "resolution": cell_ids.xdggs.params["resolution"],
-            "indexing_scheme": cell_ids.xdggs.params["indexing_scheme"],
+            "resolution": cell_ids.dggs.params["resolution"],
+            "indexing_scheme": cell_ids.dggs.params["indexing_scheme"],
             "sigma": sigma,
             "truncate": truncate,
             "kernel_size": kernel_size,
         },
-        input_core_dims=[list(cell_ids.dims)],
-        output_core_dims=[["convolved", dims[0]]],
+        input_core_dims=[dims],
+        output_core_dims=[["convolved", "original"]],
         dask="forbidden",  # until `gaussian_kernel` supports it
         keep_attrs="drop",
     )
@@ -48,7 +49,5 @@ def gaussian_kernel(
         size_param = {"truncate": truncate}
 
     return matrix.assign_attrs(
-        cell_ids.xdggs.params
-        | {"kernel_type": "gaussian", "method": "continous", "sigma": sigma}
-        | size_param
+        {"kernel_type": "gaussian", "method": "continous", "sigma": sigma} | size_param
     )
