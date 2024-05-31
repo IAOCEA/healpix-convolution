@@ -46,7 +46,7 @@ def gaussian_kernel(
             f"cell ids must be 1-dimensional, but shape is: {cell_ids.shape}"
         )
 
-    cell_ids = np.reshape(cell_ids, -1)
+    cell_ids = np.reshape(cell_ids, (-1,))
 
     # TODO: figure out whether there is a better way of defining the units of `sigma`
     if kernel_size is not None:
