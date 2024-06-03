@@ -12,7 +12,7 @@ repos:
       - id: check-yaml
       - id: check-toml
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.5
+    rev: v0.4.7
     hooks:
       - id: ruff
         args: [--fix]
@@ -35,3 +35,4 @@ repos:
     rev: v4.0.0-alpha.8
     hooks:
       - id: prettier
+        args: [--cache-location=.prettier_cache/cache]
