@@ -51,5 +51,8 @@ def gaussian_kernel(
         size_param = {"truncate": truncate}
 
     return matrix.assign_attrs(
-        {"kernel_type": "gaussian", "method": "continous", "sigma": sigma} | size_param
+        {"kernel_type": "gaussian", "method": "continuous", "sigma": sigma} | size_param
+    ).assign_coords(
+        input_cell_ids=cell_ids.swap_dims({"cells": "input_cells"}).variable,
+        output_cell_ids=cell_ids.swap_dims({"cells": "output_cells"}).variable,
     )
