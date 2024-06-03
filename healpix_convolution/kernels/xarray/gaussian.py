@@ -40,8 +40,8 @@ def gaussian_kernel(
             "kernel_size": kernel_size,
         },
         input_core_dims=[dims],
-        output_core_dims=[["convolved", "original"]],
-        dask="forbidden",  # until `gaussian_kernel` supports it
+        output_core_dims=[["output_cells", "input_cells"]],
+        dask="allowed",
         keep_attrs="drop",
     )
 
