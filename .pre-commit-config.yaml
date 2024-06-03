@@ -35,3 +35,4 @@ repos:
     rev: v4.0.0-alpha.8
     hooks:
       - id: prettier
+        args: [--cache-location=.prettier_cache/cache]
