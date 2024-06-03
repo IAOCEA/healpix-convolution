@@ -27,12 +27,14 @@ def gaussian_kernel(
     """
     dims = list(cell_ids.dims)
 
+    grid = xdggs.healpix.HealpixInfo.from_dict(cell_ids.attrs)
+
     matrix = xr.apply_ufunc(
         gaussian.gaussian_kernel,
         cell_ids,
         kwargs={
-            "resolution": cell_ids.dggs.params["resolution"],
-            "indexing_scheme": cell_ids.dggs.params["indexing_scheme"],
+            "resolution": grid.resolution,
+            "indexing_scheme": grid.indexing_scheme,
             "sigma": sigma,
             "truncate": truncate,
             "kernel_size": kernel_size,
