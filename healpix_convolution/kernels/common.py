@@ -1,3 +1,5 @@
+import dask
+import dask.array as da
 import numpy as np
 import sparse
 
@@ -15,5 +17,8 @@ def create_sparse(cell_ids, neighbours, weights, shape):
 
     weights_ = np.reshape(weights, (-1,))[mask]
     coords_ = coords[..., mask]
+
+    if isinstance(weights_, da.Array):
+        coords_, weights_ = dask.compute(coords_, weights_)
 
     return sparse.COO(coords=coords_, data=weights_, shape=shape, fill_value=0)
