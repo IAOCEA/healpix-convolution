@@ -17,3 +17,5 @@ dependencies:
   - xarray
   - folium
   - shapely
+  - opt_einsum
+  - matplotlib
