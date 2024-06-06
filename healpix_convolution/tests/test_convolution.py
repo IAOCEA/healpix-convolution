@@ -15,7 +15,7 @@ from healpix_convolution import convolution
         ),
     )
 )
-def test_convolution(data):
+def test_numpy_convolve(data):
     kernel = sparse.COO.from_numpy(
         np.array(
             [
