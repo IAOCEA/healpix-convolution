@@ -17,4 +17,4 @@ def convolve(arr, kernel, **kwargs):
     if isinstance(arr, da.Array) and not isinstance(kernel, da.Array):
         kernel = da.from_array(kernel)
 
-    return opt_einsum.contract(arr, kernel, "...a,ba->...b", **kwargs)
+    return opt_einsum.contract("...a,ba->...b", arr, kernel, **kwargs)
