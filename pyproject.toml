@@ -2,8 +2,19 @@
 name = "healpix-convolution"
 requires-python = ">= 3.11"
 license = {text = "Apache-2.0"}
-dependencies = []
+dependencies = [
+  "numpy",
+  "healpy",
+  "sparse",
+  "numba",
+  "opt_einsum",
+]
 dynamic = ["version"]
+
+[project.optional-dependencies]
+xarray = ["xarray"]
+lazy = ["dask"]
+plotting = ["matplotlib", "cartopy"]
 
 [build-system]
 requires = ["setuptools>=64.0", "setuptools-scm"]
