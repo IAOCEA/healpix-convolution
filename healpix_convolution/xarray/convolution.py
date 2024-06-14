@@ -2,6 +2,22 @@ import xarray as xr
 
 
 def convolve(ds, kernel, dim="cells"):
+    """convolve data on a DGGS grid
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        The input data. Must be compatible with `xdggs`.
+    kernel : xarray.DataArray
+        The sparse kernel matrix.
+    dim : str, default: "cells"
+        The input dimension name. Will also be the output dimension name.
+
+    Returns
+    -------
+    convolved : xarray.Dataset
+        The result of the convolution.
+    """
     if ds.chunksizes:
         kernel = kernel.chunk()
 
