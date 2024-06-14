@@ -27,7 +27,7 @@ def gaussian_kernel(
     """
     dims = list(cell_ids.dims)
 
-    grid = xdggs.healpix.HealpixInfo.from_dict(cell_ids.attrs)
+    grid = cell_ids.dggs.grid_info
 
     matrix = xr.apply_ufunc(
         gaussian.gaussian_kernel,
