@@ -75,14 +75,17 @@ def constant_mode(cell_ids, neighbours, grid_info, constant_value):
 
 
 def linear_ramp_mode(cell_ids, neighbours, grid_info, end_value):
+    # algorithm:  for each padded cell find the closest edge cell and the distance
     pass
 
 
 def edge_mode(cell_ids, neighbours, grid_info):
+    # algorithm: for each padded cell find the closest edge cell
     pass
 
 
 def reflect_mode(cell_ids, neighbours, grid_info):
+    # algorithm: for each padded cell, find the closest edge cell and the distance, then take the index of the cell that in the same distance and direction as the edge cell from the padded cell
     pass
 
 
