@@ -6,7 +6,7 @@ from xarray.namedarray._typing import _arrayfunction_or_api as _ArrayLike
 from xarray.namedarray._typing import _ScalarType
 from xdggs.grid import DGGSInfo
 
-from healpix_convolution import neighbours as nb
+from healpix_convolution.neighbours import neighbours as search_neighbours
 
 
 @dataclass
@@ -124,8 +124,11 @@ def pad(
     #   * an array of indices that map existing values to the new cell ids
     # To be able to reuse this, we need a set of dataclasses that can encapsulate that,
     # plus a method to apply the padding to data.
-    neighbours = nb.neighbours(
-        cell_ids, grid_info.resolution, grid_info.indexing_scheme, ring=ring
+    neighbours = search_neighbours(
+        cell_ids,
+        resolution=grid_info.resolution,
+        indexing_scheme=grid_info.indexing_scheme,
+        ring=ring,
     )
 
     modes = {
