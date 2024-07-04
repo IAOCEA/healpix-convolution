@@ -19,3 +19,6 @@ dependencies:
   - shapely
   - opt_einsum
   - matplotlib
+  - pip
+  - pip:
+      - git+https://github.com/xarray-contrib/xdggs
