@@ -1,9 +1,12 @@
 from dataclasses import dataclass
+from functools import partial
 
 import numpy as np
 from xarray.namedarray._typing import _arrayfunction_or_api as _ArrayLike
 from xarray.namedarray._typing import _ScalarType
 from xdggs.grid import DGGSInfo
+
+from healpix_convolution import neighbours as nb
 
 
 @dataclass
@@ -48,15 +51,38 @@ class DataPadding(Padding):
         return np.insert(data, self.insert_indices, pad_values, axis=-1)
 
 
-def pad(cell_ids, *, grid_info, ring, mode="constant", constant_value=0, end_value=0):
+def constant_mode(cell_ids, neighbours, grid_info, constant_value):
+    pass
+
+
+def linear_ramp_mode(cell_ids, neighbours, grid_info, end_value):
+    pass
+
+
+def edge_mode(cell_ids, neighbours, grid_info):
+    pass
+
+
+def reflect_mode(cell_ids, neighbours, grid_info):
+    pass
+
+
+def pad(
+    cell_ids,
+    *,
+    grid_info,
+    ring,
+    mode="constant",
+    constant_value=0,
+    end_value=0,
+    reflect_type="even",
+):
     """pad an array
 
     Parameters
     ----------
     cell_ids : array-like
         The cell ids.
-    data : array-like
-        The array to pad.
     grid_info : xdggs.DGGSInfo
         The grid parameters.
     ring : int
@@ -72,7 +98,9 @@ def pad(cell_ids, *, grid_info, ring, mode="constant", constant_value=0, end_val
     constant_value : scalar, default: 0
         The constant value used in constant mode.
     end_value : scalar, default: 0
-        The othermost value to interpolate to.
+        The othermost value to interpolate to. Only used in linear ramp mode.
+    reflect_type : {"even", "odd"}, default: "even"
+        The reflect type. Only used in reflect mode.
 
     Returns
     -------
@@ -96,3 +124,19 @@ def pad(cell_ids, *, grid_info, ring, mode="constant", constant_value=0, end_val
     #   * an array of indices that map existing values to the new cell ids
     # To be able to reuse this, we need a set of dataclasses that can encapsulate that,
     # plus a method to apply the padding to data.
+    neighbours = nb.neighbours(
+        cell_ids, grid_info.resolution, grid_info.indexing_scheme, ring=ring
+    )
+
+    modes = {
+        "constant": partial(constant_mode, constant_value=constant_value),
+        "linear_ramp": partial(linear_ramp_mode, end_value=end_value),
+        "edge": edge_mode,
+        "reflect_mode": partial(reflect_mode, reflect_type=reflect_type),
+    }
+
+    mode_func = modes.get(mode)
+    if mode_func is None:
+        raise ValueError(f"unknown mode: {mode}")
+
+    return mode_func(cell_ids, neighbours, grid_info)
