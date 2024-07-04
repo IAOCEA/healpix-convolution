@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import partial
 
 import numpy as np
@@ -11,9 +11,9 @@ from healpix_convolution.neighbours import neighbours as search_neighbours
 
 @dataclass
 class Padding:
-    cell_ids: _ArrayLike
-    insert_indices: _ArrayLike
-    grid_info: DGGSInfo
+    cell_ids: _ArrayLike = field(repr=False)
+    insert_indices: _ArrayLike = field(repr=False)
+    grid_info: DGGSInfo = field(repr=False)
 
     def apply(self, data):
         raise NotImplementedError()
