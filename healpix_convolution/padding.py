@@ -34,12 +34,14 @@ class ConstantPadding(Padding):
 @dataclass
 class LinearRampPadding(Padding):
     end_value: _ScalarType
+    ring: int
+
     border_indices: _ArrayLike
     distance: _ArrayLike
 
     def apply(self, data):
         offsets = data[..., self.border_indices]
-        ramp = self.end_value - offsets
+        ramp = (self.end_value - offsets) / self.ring
         pad_values = offsets + ramp * self.distance
 
         return np.insert(data, self.insert_indices, pad_values, axis=-1)
@@ -150,7 +152,7 @@ def pad(
 
     modes = {
         "constant": partial(constant_mode, constant_value=constant_value),
-        "linear_ramp": partial(linear_ramp_mode, end_value=end_value),
+        "linear_ramp": partial(linear_ramp_mode, end_value=end_value, ring=ring),
         "edge": edge_mode,
         "reflect_mode": partial(reflect_mode, reflect_type=reflect_type),
     }
