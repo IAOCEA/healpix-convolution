@@ -79,6 +79,10 @@ jobs:
           conda info -a
           conda list
 
+      - name: Import healpix-convolution
+        run: |
+          python -c 'import healpix_convolution'
+
       - name: Restore cached hypothesis directory
         uses: actions/cache@v4
         with:
