@@ -24,7 +24,11 @@ class ConstantPadding(Padding):
     constant_value: _ScalarType
 
     def apply(self, data):
-        return np.insert(data, self.insert_indices, self.constant_value)
+        common_dtype = np.result_type(data, self.constant_value)
+
+        return np.insert(
+            data.astype(common_dtype), self.insert_indices, self.constant_value, axis=-1
+        )
 
 
 @dataclass
@@ -52,7 +56,20 @@ class DataPadding(Padding):
 
 
 def constant_mode(cell_ids, neighbours, grid_info, constant_value):
-    pass
+    all_cell_ids = np.unique(neighbours)
+    if all_cell_ids[0] == -1:
+        all_cell_ids = all_cell_ids[1:]
+
+    new_cell_ids = all_cell_ids[np.logical_not(np.isin(all_cell_ids, cell_ids))]
+
+    insert_indices = np.searchsorted(cell_ids, new_cell_ids)
+
+    return ConstantPadding(
+        cell_ids=all_cell_ids,
+        insert_indices=insert_indices,
+        grid_info=grid_info,
+        constant_value=constant_value,
+    )
 
 
 def linear_ramp_mode(cell_ids, neighbours, grid_info, end_value):
