@@ -5,6 +5,7 @@ license = {text = "Apache-2.0"}
 dependencies = [
   "numpy",
   "healpy",
+  "xdggs",
   "sparse",
   "numba",
   "opt_einsum",
