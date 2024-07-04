@@ -59,10 +59,9 @@ class DataPadding(Padding):
 
 def constant_mode(cell_ids, neighbours, grid_info, constant_value):
     all_cell_ids = np.unique(neighbours)
-    if all_cell_ids[0] == -1:
-        all_cell_ids = all_cell_ids[1:]
-
-    new_cell_ids = all_cell_ids[np.logical_not(np.isin(all_cell_ids, cell_ids))]
+    new_cell_ids = np.setdiff1d(
+        all_cell_ids, np.concatenate((np.array([-1]), cell_ids))
+    )
 
     insert_indices = np.searchsorted(cell_ids, new_cell_ids)
 
