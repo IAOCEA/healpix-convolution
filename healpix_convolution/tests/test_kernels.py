@@ -132,7 +132,7 @@ class TestXarray:
         (
             (
                 xr.DataArray(
-                    [0, 1],
+                    [1, 2],
                     coords={
                         "cell_ids": (
                             "cells",
@@ -150,7 +150,7 @@ class TestXarray:
             ),
             (
                 xr.DataArray(
-                    [0, 1],
+                    [1, 2],
                     coords={
                         "cell_ids": (
                             "cells",
@@ -168,7 +168,7 @@ class TestXarray:
             ),
             (
                 xr.DataArray(
-                    [0, 1],
+                    [0, 2],
                     coords={
                         "cell_ids": (
                             "cells",
@@ -186,7 +186,7 @@ class TestXarray:
             ),
             (
                 xr.DataArray(
-                    [0, 1],
+                    [1, 2],
                     coords={
                         "cell_ids": (
                             "cells",
@@ -204,11 +204,11 @@ class TestXarray:
             ),
             (
                 xr.DataArray(
-                    [0, 1],
+                    [0, 3],
                     coords={
                         "cell_ids": (
                             "cells",
-                            np.array([3, 0]),
+                            np.array([0, 3]),
                             {
                                 "grid_name": "healpix",
                                 "resolution": 1,
