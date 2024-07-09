@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from healpix_convolution import kernels
+from healpix_convolution import kernels as np_kernels
 
 
 @pytest.mark.parametrize(
@@ -28,7 +28,7 @@ def test_create_sparse(cell_ids, neighbours, weights):
     if input_cell_ids[0] == -1:
         input_cell_ids = input_cell_ids[1:]
 
-    actual = kernels.common.create_sparse(cell_ids, neighbours, weights)
+    actual = np_kernels.common.create_sparse(cell_ids, neighbours, weights)
 
     nnz = np.sum(neighbours != -1, axis=1)
     value = nnz * weights[0]
@@ -78,7 +78,7 @@ class TestGaussian:
         ),
     )
     def test_gaussian_kernel(self, cell_ids, kwargs):
-        actual = kernels.gaussian_kernel(cell_ids, **kwargs)
+        actual = np_kernels.gaussian_kernel(cell_ids, **kwargs)
 
         kernel_sum = np.sum(actual, axis=1)
 
@@ -116,4 +116,4 @@ class TestGaussian:
     )
     def test_gaussian_kernel_errors(self, cell_ids, kwargs, error, pattern):
         with pytest.raises(error, match=pattern):
-            kernels.gaussian_kernel(cell_ids, **kwargs)
+            np_kernels.gaussian_kernel(cell_ids, **kwargs)
