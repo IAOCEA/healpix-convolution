@@ -65,7 +65,4 @@ def gaussian_kernel(
     masked = np.where(nb == -1, 0, phi_x)
     normalized = masked / np.sum(masked, axis=1, keepdims=True)
 
-    # TODO (keewis): figure out a way to translate global healpix indices to local ones
-    # The kernel should still work for a subset of the full map.
-    shape = (12 * 4**resolution, 12 * 4**resolution)
-    return create_sparse(cell_ids, nb, normalized, shape=shape)
+    return create_sparse(cell_ids, nb, normalized)
