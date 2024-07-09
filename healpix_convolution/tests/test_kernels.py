@@ -220,6 +220,24 @@ class TestXarray:
                 ),
                 {"sigma": 0.1, "kernel_size": 3},
             ),
+            (
+                xr.DataArray(
+                    np.arange(12 * 4**2, dtype="int64"),
+                    coords={
+                        "cell_ids": (
+                            "cells",
+                            np.arange(12 * 4**2, dtype="int64"),
+                            {
+                                "grid_name": "healpix",
+                                "resolution": 2,
+                                "indexing_scheme": "ring",
+                            },
+                        )
+                    },
+                    dims="cells",
+                ),
+                {"sigma": 0.1, "kernel_size": 3},
+            ),
         ),
     )
     def test_gaussian_kernel(self, obj, kwargs):
