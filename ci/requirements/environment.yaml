@@ -10,8 +10,7 @@ dependencies:
   - numba
   - numpy
   - dask
-  - healpy
-  - scipy<1.14 # healpy uses the removed `scipy.integrate.trapz`
+  - healpy>=1.17
   - geopandas
   - pandas
   - sparse
