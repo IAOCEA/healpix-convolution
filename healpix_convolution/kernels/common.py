@@ -28,4 +28,6 @@ def create_sparse(cell_ids, neighbours, weights):
         coords_, weights_ = dask.compute(coords_, weights_)
 
     shape = (cell_ids.size, all_cell_ids.size)
-    return sparse.COO(coords=coords_, data=weights_, shape=shape, fill_value=0)
+    return all_cell_ids, sparse.COO(
+        coords=coords_, data=weights_, shape=shape, fill_value=0
+    )

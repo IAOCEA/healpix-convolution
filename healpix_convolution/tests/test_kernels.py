@@ -24,16 +24,20 @@ from healpix_convolution import kernels as np_kernels
     ),
 )
 def test_create_sparse(cell_ids, neighbours, weights):
-    input_cell_ids = np.unique(neighbours)
-    if input_cell_ids[0] == -1:
-        input_cell_ids = input_cell_ids[1:]
+    expected_cell_ids = np.unique(neighbours)
+    if expected_cell_ids[0] == -1:
+        expected_cell_ids = expected_cell_ids[1:]
 
-    actual = np_kernels.common.create_sparse(cell_ids, neighbours, weights)
+    actual_cell_ids, actual = np_kernels.common.create_sparse(
+        cell_ids, neighbours, weights
+    )
 
     nnz = np.sum(neighbours != -1, axis=1)
     value = nnz * weights[0]
 
-    expected_shape = (cell_ids.size, input_cell_ids.size)
+    np.testing.assert_equal(actual_cell_ids, expected_cell_ids)
+
+    expected_shape = (cell_ids.size, expected_cell_ids.size)
     assert hasattr(actual, "nnz"), "not a sparse matrix"
     assert np.allclose(
         np.sum(actual, axis=1).todense(), value
@@ -78,7 +82,7 @@ class TestGaussian:
         ),
     )
     def test_gaussian_kernel(self, cell_ids, kwargs):
-        actual = np_kernels.gaussian_kernel(cell_ids, **kwargs)
+        _, actual = np_kernels.gaussian_kernel(cell_ids, **kwargs)
 
         kernel_sum = np.sum(actual, axis=1)
 
