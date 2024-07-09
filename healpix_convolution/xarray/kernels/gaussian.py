@@ -29,7 +29,7 @@ def gaussian_kernel(
 
     grid = cell_ids.dggs.grid_info
 
-    matrix = xr.apply_ufunc(
+    padded_cell_ids, matrix = xr.apply_ufunc(
         gaussian.gaussian_kernel,
         cell_ids,
         kwargs={
@@ -40,7 +40,7 @@ def gaussian_kernel(
             "kernel_size": kernel_size,
         },
         input_core_dims=[dims],
-        output_core_dims=[["output_cells", "input_cells"]],
+        output_core_dims=[["input_cells"], ["output_cells", "input_cells"]],
         dask="allowed",
         keep_attrs="drop",
     )
@@ -53,6 +53,6 @@ def gaussian_kernel(
     return matrix.assign_attrs(
         {"kernel_type": "gaussian", "method": "continuous", "sigma": sigma} | size_param
     ).assign_coords(
-        input_cell_ids=cell_ids.swap_dims({"cells": "input_cells"}).variable,
         output_cell_ids=cell_ids.swap_dims({"cells": "output_cells"}).variable,
+        input_cell_ids=padded_cell_ids.variable,
     )
