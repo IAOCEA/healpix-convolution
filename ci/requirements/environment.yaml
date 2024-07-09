@@ -10,7 +10,7 @@ dependencies:
   - numba
   - numpy
   - dask
-  - healpy
+  - healpy>=1.17
   - geopandas
   - pandas
   - sparse
