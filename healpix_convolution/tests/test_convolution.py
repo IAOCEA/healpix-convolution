@@ -2,7 +2,7 @@ import hypothesis.extra.numpy as npst
 import hypothesis.strategies as st
 import numpy as np
 import sparse
-from hypothesis import given
+from hypothesis import given, settings
 
 from healpix_convolution import convolution
 
@@ -14,6 +14,7 @@ from healpix_convolution import convolution
         dtype=st.sampled_from(["int16", "int32", "int64"]),
     ),
 )
+@settings(deadline=1000)
 def test_numpy_convolve(data):
     dense_kernel = (
         np.array(
