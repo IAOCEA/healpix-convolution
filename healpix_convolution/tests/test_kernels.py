@@ -1,7 +1,10 @@
 import numpy as np
 import pytest
+import xarray as xr
+import xdggs
 
 from healpix_convolution import kernels as np_kernels
+from healpix_convolution.xarray import kernels as xr_kernels
 
 
 @pytest.mark.parametrize(
@@ -121,3 +124,109 @@ class TestGaussian:
     def test_gaussian_kernel_errors(self, cell_ids, kwargs, error, pattern):
         with pytest.raises(error, match=pattern):
             np_kernels.gaussian_kernel(cell_ids, **kwargs)
+
+
+class TestXarray:
+    @pytest.mark.parametrize(
+        ["obj", "kwargs"],
+        (
+            (
+                xr.DataArray(
+                    [0, 1],
+                    coords={
+                        "cell_ids": (
+                            "cells",
+                            np.array([1, 2]),
+                            {
+                                "grid_name": "healpix",
+                                "resolution": 1,
+                                "indexing_scheme": "nested",
+                            },
+                        )
+                    },
+                    dims="cells",
+                ),
+                {"sigma": 0.1},
+            ),
+            (
+                xr.DataArray(
+                    [0, 1],
+                    coords={
+                        "cell_ids": (
+                            "cells",
+                            np.array([1, 2]),
+                            {
+                                "grid_name": "healpix",
+                                "resolution": 1,
+                                "indexing_scheme": "ring",
+                            },
+                        )
+                    },
+                    dims="cells",
+                ),
+                {"sigma": 0.1},
+            ),
+            (
+                xr.DataArray(
+                    [0, 1],
+                    coords={
+                        "cell_ids": (
+                            "cells",
+                            np.array([0, 2]),
+                            {
+                                "grid_name": "healpix",
+                                "resolution": 1,
+                                "indexing_scheme": "nested",
+                            },
+                        )
+                    },
+                    dims="cells",
+                ),
+                {"sigma": 0.2},
+            ),
+            (
+                xr.DataArray(
+                    [0, 1],
+                    coords={
+                        "cell_ids": (
+                            "cells",
+                            np.array([1, 2]),
+                            {
+                                "grid_name": "healpix",
+                                "resolution": 1,
+                                "indexing_scheme": "nested",
+                            },
+                        )
+                    },
+                    dims="cells",
+                ),
+                {"sigma": 0.1, "kernel_size": 5},
+            ),
+            (
+                xr.DataArray(
+                    [0, 1],
+                    coords={
+                        "cell_ids": (
+                            "cells",
+                            np.array([3, 0]),
+                            {
+                                "grid_name": "healpix",
+                                "resolution": 1,
+                                "indexing_scheme": "ring",
+                            },
+                        )
+                    },
+                    dims="cells",
+                ),
+                {"sigma": 0.1, "kernel_size": 3},
+            ),
+        ),
+    )
+    def test_gaussian_kernel(self, obj, kwargs):
+        obj_ = obj.pipe(xdggs.decode)
+        actual = xr_kernels.gaussian_kernel(obj_, **kwargs)
+
+        kernel_sum = actual.sum(dim="input_cells")
+
+        assert actual.count() == actual.size
+        np.testing.assert_allclose(kernel_sum.data.todense(), 1)
