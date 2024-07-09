@@ -24,16 +24,21 @@ from healpix_convolution import kernels
     ),
 )
 def test_create_sparse(cell_ids, neighbours, weights):
-    actual = kernels.common.create_sparse(cell_ids, neighbours, weights, shape=(48, 48))
+    input_cell_ids = np.unique(neighbours)
+    if input_cell_ids[0] == -1:
+        input_cell_ids = input_cell_ids[1:]
+
+    actual = kernels.common.create_sparse(cell_ids, neighbours, weights)
 
     nnz = np.sum(neighbours != -1, axis=1)
     value = nnz * weights[0]
 
+    expected_shape = (cell_ids.size, input_cell_ids.size)
     assert hasattr(actual, "nnz"), "not a sparse matrix"
     assert np.allclose(
-        np.sum(actual[cell_ids, :], axis=1).todense(), value
+        np.sum(actual, axis=1).todense(), value
     ), "rows have unexpected values"
-    assert actual.size == 48**2
+    assert actual.shape == expected_shape
 
 
 class TestGaussian:
@@ -78,7 +83,7 @@ class TestGaussian:
         kernel_sum = np.sum(actual, axis=1)
 
         assert np.sum(np.isnan(actual)) == 0
-        np.testing.assert_allclose(kernel_sum[cell_ids].todense(), 1)
+        np.testing.assert_allclose(kernel_sum.todense(), 1)
 
         # try determining the sigma from the values for better tests
 

@@ -181,6 +181,8 @@ def neighbours(cell_ids, *, resolution, indexing_scheme, ring=1):
         plus their immediate neighbours (a total of 24 cells), and so on.
     """
     nside = 2**resolution
+    if ring < 0:
+        raise ValueError(f"ring must be a positive integer or 0, got {ring}")
     if ring > nside:
         raise ValueError(
             "rings containing more than the neighbouring base pixels are not supported"

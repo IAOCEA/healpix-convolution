@@ -73,7 +73,4 @@ def gaussian_kernel(
     d = angular_distances(nb, resolution=resolution, indexing_scheme=indexing_scheme)
     weights = gaussian_function(d, sigma, mask=nb == -1)
 
-    # TODO (keewis): figure out a way to translate global healpix indices to local ones
-    # The kernel should still work for a subset of the full map.
-    shape = (12 * 4**resolution, 12 * 4**resolution)
-    return create_sparse(cell_ids, nb, weights, shape=shape)
+    return create_sparse(cell_ids, nb, weights)
