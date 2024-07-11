@@ -1,7 +1,7 @@
 import healpy as hp
 import numba
 import numpy as np
-from numba import int8, int32, int64
+from numba import int8, int16, int32, int64
 
 try:
     import dask.array as da
@@ -138,6 +138,8 @@ def adjust_xyf(cx, cy, cf, nside):
     [
         (int32, int32, int32, int32, int8[:, :], int32[:], int32[:], int32[:]),
         (int64, int64, int64, int32, int8[:, :], int64[:], int64[:], int64[:]),
+        (int32, int32, int32, int32, int16[:, :], int32[:], int32[:], int32[:]),
+        (int64, int64, int64, int32, int16[:, :], int64[:], int64[:], int64[:]),
     ],
     "(),(),(),(),(n,m)->(n),(n),(n)",
 )
@@ -166,6 +168,17 @@ def _neighbours(cell_ids, *, offsets, nside, indexing_scheme):
     return np.where(neighbour_face == -1, -1, n_)
 
 
+def minimum_dtype(value):
+    if value < np.iinfo("int8").max:
+        return "int8"
+    elif value < np.iinfo("int16").max:
+        return "int16"
+    elif value < np.iinfo("int32").max:
+        return "int32"
+    elif value < np.iinfo("int64").max:
+        return "int64"
+
+
 def neighbours(cell_ids, *, resolution, indexing_scheme, ring=1):
     """determine the neighbours within the nth ring around the center pixel
 
@@ -188,7 +201,7 @@ def neighbours(cell_ids, *, resolution, indexing_scheme, ring=1):
             "rings containing more than the neighbouring base pixels are not supported"
         )
 
-    offsets = np.asarray(list(generate_offsets(ring=ring)), dtype="int8")
+    offsets = np.asarray(list(generate_offsets(ring=ring)), dtype=minimum_dtype(ring))
 
     if isinstance(cell_ids, dask_array_type):
         n_neighbours = (2 * ring + 1) ** 2
