@@ -1,7 +1,9 @@
 import xarray as xr
 
 
-def convolve(ds, kernel, *, dim="cells"):
+def convolve(
+    ds, kernel, *, dim="cells", mode: str = "constant", constant_values: int | float = 0
+):
     """convolve data on a DGGS grid
 
     Parameters
@@ -12,11 +14,21 @@ def convolve(ds, kernel, *, dim="cells"):
         The sparse kernel matrix.
     dim : str, default: "cells"
         The input dimension name. Will also be the output dimension name.
+    mode : str, default: "constant"
+        Mode used to pad the array before convolving. Only used for regional maps. See
+        :py:func:`pad` for a list of available modes.
+    constant_values : int or float, default: 0
+        The constant value to pad with when mode is ``"constant"``.
 
     Returns
     -------
     convolved : xarray.Dataset
         The result of the convolution.
+
+    See Also
+    --------
+    healpix_convolution.xarray.pad
+    healpix_convolution.pad
     """
     if ds.chunksizes:
         kernel = kernel.chunk()
