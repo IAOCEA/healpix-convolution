@@ -25,24 +25,15 @@ def gaussian_kernel(
     kernel : xarray.DataArray
         The kernel as a sparse matrix.
     """
-    dims = list(cell_ids.dims)
-
     grid = cell_ids.dggs.grid_info
 
-    padded_cell_ids, matrix = xr.apply_ufunc(
-        gaussian.gaussian_kernel,
-        cell_ids,
-        kwargs={
-            "resolution": grid.resolution,
-            "indexing_scheme": grid.indexing_scheme,
-            "sigma": sigma,
-            "truncate": truncate,
-            "kernel_size": kernel_size,
-        },
-        input_core_dims=[dims],
-        output_core_dims=[["input_cells"], ["output_cells", "input_cells"]],
-        dask="allowed",
-        keep_attrs="drop",
+    padded_cell_ids, matrix = gaussian.gaussian_kernel(
+        cell_ids.data,
+        resolution=grid.resolution,
+        indexing_scheme=grid.indexing_scheme,
+        sigma=sigma,
+        truncate=truncate,
+        kernel_size=kernel_size,
     )
 
     if kernel_size is not None:
@@ -50,9 +41,18 @@ def gaussian_kernel(
     else:
         size_param = {"truncate": truncate}
 
-    return matrix.assign_attrs(
-        {"kernel_type": "gaussian", "method": "continuous", "sigma": sigma} | size_param
-    ).assign_coords(
-        output_cell_ids=cell_ids.swap_dims({"cells": "output_cells"}).variable,
-        input_cell_ids=padded_cell_ids.variable,
+    attrs = {
+        "kernel_type": "gaussian",
+        "method": "continuous",
+        "sigma": sigma,
+    } | size_param
+
+    return xr.DataArray(
+        matrix,
+        dims=["output_cells", "input_cells"],
+        coords={
+            "output_cell_ids": ("output_cells", cell_ids.data, cell_ids.attrs),
+            "input_cell_ids": ("input_cells", padded_cell_ids, cell_ids.attrs),
+        },
+        attrs=attrs,
     )
