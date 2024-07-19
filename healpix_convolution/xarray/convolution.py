@@ -54,13 +54,14 @@ def convolve(
     resolution = grid_info.resolution
 
     if ds.sizes["cells"] != 12 * 4**resolution:
-        ds = pad(
-            ds,
+        padder = pad(
+            ds["cell_ids"],
             grid_info=grid_info,
             ring=kernel.attrs["ring"],
             mode=mode,
             constant_values=constant_values,
         )
+        ds = padder.pad(ds)
 
     return (
         ds.rename_dims({dim: "input_cells"})
