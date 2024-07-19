@@ -1,5 +1,7 @@
 import xarray as xr
 
+from healpix_convolution.xarray import pad
+
 
 def convolve(
     ds, kernel, *, dim="cells", mode: str = "constant", constant_values: int | float = 0
@@ -46,6 +48,18 @@ def convolve(
             # This dimension will be "contracted"
             # or summed over after multiplying by the weights
             dims=src_dims,
+        )
+
+    grid_info = ds.dggs.grid_info
+    resolution = grid_info.resolution
+
+    if ds.sizes["cells"] != 12 * 4**resolution:
+        ds = pad(
+            ds,
+            grid_info=grid_info,
+            ring=kernel.attrs["ring"],
+            mode=mode,
+            constant_values=constant_values,
         )
 
     return (
