@@ -1,7 +1,7 @@
 import xarray as xr
 
 
-def convolve(ds, kernel, dim="cells"):
+def convolve(ds, kernel, *, dim="cells"):
     """convolve data on a DGGS grid
 
     Parameters
