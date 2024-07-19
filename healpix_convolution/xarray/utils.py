@@ -2,9 +2,9 @@ import xarray as xr
 
 
 def call_on_dataset(f, obj):
-    if isinstance(f, xr.Dataset):
+    if isinstance(obj, xr.Dataset):
         return f(obj)
-    elif isinstance(f, xr.DataArray):
+    elif isinstance(obj, xr.DataArray):
         ds = obj._to_temp_dataset()
         result = f(ds)
         return obj._from_temp_dataset(result)

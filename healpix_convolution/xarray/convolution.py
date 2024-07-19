@@ -50,13 +50,10 @@ def convolve(
             dims=src_dims,
         )
 
-    grid_info = ds.dggs.grid_info
-    resolution = grid_info.resolution
-
-    if ds.sizes["cells"] != 12 * 4**resolution:
+    if ds.sizes["sizes"] != kernel.sizes["input_cells"]:
         padder = pad(
             ds["cell_ids"],
-            grid_info=grid_info,
+            grid_info=ds.dggs.grid_info,
             ring=kernel.attrs["ring"],
             mode=mode,
             constant_values=constant_values,
