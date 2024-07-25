@@ -291,3 +291,13 @@ class TestXarray:
 
         assert actual.count() == actual.size
         np.testing.assert_allclose(kernel_sum.data.todense(), 1)
+
+        grid_info = obj_.dggs.grid_info
+        reconstructed_sigma = reconstruct_sigma(
+            obj.cell_ids.data,
+            actual.data,
+            resolution=grid_info.resolution,
+            indexing_scheme=grid_info.indexing_scheme,
+            **kwargs,
+        )
+        np.testing.assert_allclose(reconstructed_sigma, kwargs["sigma"])
