@@ -13,7 +13,7 @@ def compute_ring(resolution, sigma, truncate, kernel_size):
         cell_distance = hp.nside2resol(2**resolution, arcmin=False)
         ring = int((truncate * sigma / cell_distance) // 2)
 
-    return ring
+    return ring if ring >= 1 else 1
 
 
 def gaussian_function(distances, sigma, *, mask=None):

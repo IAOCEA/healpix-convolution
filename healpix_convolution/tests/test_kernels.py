@@ -48,6 +48,47 @@ def test_create_sparse(cell_ids, neighbours, weights):
     assert actual.shape == expected_shape
 
 
+def fit_polynomial(x, y, deg):
+    mask = y > 0
+    x_ = x[mask]
+    y_ = y[mask]
+
+    p = np.polynomial.Polynomial.fit(x_, np.log(y_), deg=deg)
+    return p.convert()
+
+
+def reconstruct_sigma(
+    cell_ids,
+    kernel,
+    *,
+    resolution,
+    indexing_scheme,
+    sigma,
+    truncate=4.0,
+    kernel_size=None,
+):
+    from healpix_convolution import angular_distances, neighbours
+
+    ring = np_kernels.gaussian.compute_ring(resolution, sigma, truncate, kernel_size)
+
+    nb = neighbours(
+        cell_ids, resolution=resolution, indexing_scheme=indexing_scheme, ring=ring
+    )
+    distances = angular_distances(
+        neighbours, resolution=resolution, indexing_scheme=indexing_scheme
+    )
+
+    _, distances_ = np_kernels.common.create_sparse(cell_ids, nb, distances)
+
+    x = distances_.todense()
+    y = kernel.todense()
+
+    polynomials = [
+        fit_polynomial(x[n, :], y[n, :], deg=2) for n in range(cell_ids.size)
+    ]
+    return np.array([np.sqrt(-0.5 / p.coef[2]) for p in polynomials])
+
+
 class TestGaussian:
     @pytest.mark.parametrize(
         ["cell_ids", "kwargs"],
@@ -93,6 +134,8 @@ class TestGaussian:
         np.testing.assert_allclose(kernel_sum.todense(), 1)
 
         # try determining the sigma from the values for better tests
+        reconstructed_sigma = reconstruct_sigma(cell_ids, actual, **kwargs)
+        np.testing.assert_allclose(reconstructed_sigma, kwargs["sigma"])
 
     @pytest.mark.parametrize(
         ["cell_ids", "kwargs", "error", "pattern"],
