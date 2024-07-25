@@ -75,7 +75,7 @@ def reconstruct_sigma(
         cell_ids, resolution=resolution, indexing_scheme=indexing_scheme, ring=ring
     )
     distances = angular_distances(
-        neighbours, resolution=resolution, indexing_scheme=indexing_scheme
+        nb, resolution=resolution, indexing_scheme=indexing_scheme
     )
 
     _, distances_ = np_kernels.common.create_sparse(cell_ids, nb, distances)
@@ -86,7 +86,7 @@ def reconstruct_sigma(
     polynomials = [
         fit_polynomial(x[n, :], y[n, :], deg=2) for n in range(cell_ids.size)
     ]
-    return np.array([np.sqrt(-0.5 / p.coef[2]) for p in polynomials])
+    return np.array([np.sqrt(-1 / 2 / p.coef[2]) for p in polynomials])
 
 
 class TestGaussian:
