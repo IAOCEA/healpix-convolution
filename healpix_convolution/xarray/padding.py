@@ -3,7 +3,8 @@ from dataclasses import dataclass
 import xarray as xr
 import xdggs  # noqa: F401
 
-from healpix_convolution import padding, utils
+from healpix_convolution import padding
+from healpix_convolution.xarray import utils
 
 
 @dataclass
