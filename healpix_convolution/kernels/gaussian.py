@@ -6,6 +6,16 @@ from healpix_convolution.kernels.common import create_sparse
 from healpix_convolution.neighbours import neighbours
 
 
+def compute_ring(resolution, sigma, truncate, kernel_size):
+    if kernel_size is not None:
+        ring = int(kernel_size / 2)
+    else:
+        cell_distance = hp.nside2resol(2**resolution, arcmin=False)
+        ring = int((truncate * sigma / cell_distance) // 2)
+
+    return ring
+
+
 def gaussian_function(distances, sigma, *, mask=None):
     sigma2 = sigma * sigma
     phi_x = np.exp(-0.5 / sigma2 * distances**2)
@@ -60,12 +70,7 @@ def gaussian_kernel(
 
     cell_ids = np.reshape(cell_ids, (-1,))
 
-    # TODO: figure out whether there is a better way of defining the units of `sigma`
-    if kernel_size is not None:
-        ring = int(kernel_size / 2)
-    else:
-        cell_distance = hp.nside2resol(2**resolution, arcmin=False)
-        ring = int((truncate * sigma / cell_distance) // 2)
+    ring = compute_ring(resolution, sigma, truncate, kernel_size)
 
     nb = neighbours(
         cell_ids, resolution=resolution, indexing_scheme=indexing_scheme, ring=ring
