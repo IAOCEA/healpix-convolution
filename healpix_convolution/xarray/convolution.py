@@ -1,10 +1,10 @@
 import xarray as xr
 
-from healpix_convolution.xarray import pad
+from healpix_convolution.xarray.padding import pad
 
 
 def convolve(
-    ds, kernel, *, dim="cells", mode: str = "constant", constant_values: int | float = 0
+    ds, kernel, *, dim="cells", mode: str = "constant", constant_value: int | float = 0
 ):
     """convolve data on a DGGS grid
 
@@ -50,15 +50,14 @@ def convolve(
             dims=src_dims,
         )
 
-    if ds.sizes["sizes"] != kernel.sizes["input_cells"]:
+    if ds.sizes["cells"] != kernel.sizes["input_cells"]:
         padder = pad(
             ds["cell_ids"],
-            grid_info=ds.dggs.grid_info,
             ring=kernel.attrs["ring"],
             mode=mode,
-            constant_values=constant_values,
+            constant_value=constant_value,
         )
-        ds = padder.pad(ds)
+        ds = padder.apply(ds)
 
     return (
         ds.rename_dims({dim: "input_cells"})
