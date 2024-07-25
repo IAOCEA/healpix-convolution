@@ -11,7 +11,13 @@ from healpix_convolution import convolution
     data=npst.arrays(
         shape=st.sampled_from([(5,), (10, 5)]),
         # TODO: figure out how to deal with floating point values
-        dtype=st.sampled_from(["int16", "int32", "int64"]),
+        dtype=st.sampled_from(["int32", "int64", "float32", "float64"]),
+        elements={
+            "allow_infinity": False,
+            "allow_subnormal": False,
+            "min_value": 1e9,
+            "max_value": 1e9,
+        },
     ),
 )
 @settings(deadline=1000)
