@@ -6,6 +6,18 @@ from healpix_convolution.kernels.common import create_sparse
 from healpix_convolution.neighbours import neighbours
 
 
+def gaussian_function(distances, sigma, *, mask=None):
+    sigma2 = sigma * sigma
+    phi_x = np.exp(-0.5 / sigma2 * distances**2)
+
+    if mask is not None:
+        masked = np.where(mask, 0, phi_x)
+    else:
+        masked = phi_x
+
+    return masked / np.sum(masked, axis=1, keepdims=True)
+
+
 def gaussian_kernel(
     cell_ids,
     *,
@@ -59,10 +71,6 @@ def gaussian_kernel(
         cell_ids, resolution=resolution, indexing_scheme=indexing_scheme, ring=ring
     )
     d = angular_distances(nb, resolution=resolution, indexing_scheme=indexing_scheme)
+    weights = gaussian_function(d, sigma, mask=nb == -1)
 
-    sigma2 = sigma * sigma
-    phi_x = np.exp(-0.5 / sigma2 * d**2)
-    masked = np.where(nb == -1, 0, phi_x)
-    normalized = masked / np.sum(masked, axis=1, keepdims=True)
-
-    return create_sparse(cell_ids, nb, normalized)
+    return create_sparse(cell_ids, nb, weights)

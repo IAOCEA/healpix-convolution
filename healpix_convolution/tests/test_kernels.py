@@ -1,7 +1,10 @@
 import numpy as np
 import pytest
+import xarray as xr
+import xdggs
 
-from healpix_convolution import kernels
+from healpix_convolution import kernels as np_kernels
+from healpix_convolution.xarray import kernels as xr_kernels
 
 
 @pytest.mark.parametrize(
@@ -24,16 +27,20 @@ from healpix_convolution import kernels
     ),
 )
 def test_create_sparse(cell_ids, neighbours, weights):
-    input_cell_ids = np.unique(neighbours)
-    if input_cell_ids[0] == -1:
-        input_cell_ids = input_cell_ids[1:]
+    expected_cell_ids = np.unique(neighbours)
+    if expected_cell_ids[0] == -1:
+        expected_cell_ids = expected_cell_ids[1:]
 
-    actual = kernels.common.create_sparse(cell_ids, neighbours, weights)
+    actual_cell_ids, actual = np_kernels.common.create_sparse(
+        cell_ids, neighbours, weights
+    )
 
     nnz = np.sum(neighbours != -1, axis=1)
     value = nnz * weights[0]
 
-    expected_shape = (cell_ids.size, input_cell_ids.size)
+    np.testing.assert_equal(actual_cell_ids, expected_cell_ids)
+
+    expected_shape = (cell_ids.size, expected_cell_ids.size)
     assert hasattr(actual, "nnz"), "not a sparse matrix"
     assert np.allclose(
         np.sum(actual, axis=1).todense(), value
@@ -78,7 +85,7 @@ class TestGaussian:
         ),
     )
     def test_gaussian_kernel(self, cell_ids, kwargs):
-        actual = kernels.gaussian_kernel(cell_ids, **kwargs)
+        _, actual = np_kernels.gaussian_kernel(cell_ids, **kwargs)
 
         kernel_sum = np.sum(actual, axis=1)
 
@@ -116,4 +123,128 @@ class TestGaussian:
     )
     def test_gaussian_kernel_errors(self, cell_ids, kwargs, error, pattern):
         with pytest.raises(error, match=pattern):
-            kernels.gaussian_kernel(cell_ids, **kwargs)
+            np_kernels.gaussian_kernel(cell_ids, **kwargs)
+
+
+class TestXarray:
+    @pytest.mark.parametrize(
+        ["obj", "kwargs"],
+        (
+            (
+                xr.DataArray(
+                    [1, 2],
+                    coords={
+                        "cell_ids": (
+                            "cells",
+                            np.array([1, 2]),
+                            {
+                                "grid_name": "healpix",
+                                "resolution": 1,
+                                "indexing_scheme": "nested",
+                            },
+                        )
+                    },
+                    dims="cells",
+                ),
+                {"sigma": 0.1},
+            ),
+            (
+                xr.DataArray(
+                    [1, 2],
+                    coords={
+                        "cell_ids": (
+                            "cells",
+                            np.array([1, 2]),
+                            {
+                                "grid_name": "healpix",
+                                "resolution": 1,
+                                "indexing_scheme": "ring",
+                            },
+                        )
+                    },
+                    dims="cells",
+                ),
+                {"sigma": 0.1},
+            ),
+            (
+                xr.DataArray(
+                    [0, 2],
+                    coords={
+                        "cell_ids": (
+                            "cells",
+                            np.array([0, 2]),
+                            {
+                                "grid_name": "healpix",
+                                "resolution": 1,
+                                "indexing_scheme": "nested",
+                            },
+                        )
+                    },
+                    dims="cells",
+                ),
+                {"sigma": 0.2},
+            ),
+            (
+                xr.DataArray(
+                    [1, 2],
+                    coords={
+                        "cell_ids": (
+                            "cells",
+                            np.array([1, 2]),
+                            {
+                                "grid_name": "healpix",
+                                "resolution": 1,
+                                "indexing_scheme": "nested",
+                            },
+                        )
+                    },
+                    dims="cells",
+                ),
+                {"sigma": 0.1, "kernel_size": 5},
+            ),
+            (
+                xr.DataArray(
+                    [0, 3],
+                    coords={
+                        "cell_ids": (
+                            "cells",
+                            np.array([0, 3]),
+                            {
+                                "grid_name": "healpix",
+                                "resolution": 1,
+                                "indexing_scheme": "ring",
+                            },
+                        )
+                    },
+                    dims="cells",
+                ),
+                {"sigma": 0.1, "kernel_size": 3},
+            ),
+            (
+                xr.DataArray(
+                    np.arange(12 * 4**2, dtype="int64"),
+                    coords={
+                        "cell_ids": (
+                            "cells",
+                            np.arange(12 * 4**2, dtype="int64"),
+                            {
+                                "grid_name": "healpix",
+                                "resolution": 2,
+                                "indexing_scheme": "ring",
+                            },
+                        )
+                    },
+                    dims="cells",
+                ),
+                {"sigma": 0.1, "kernel_size": 3},
+            ),
+        ),
+    )
+    def test_gaussian_kernel(self, obj, kwargs):
+        obj_ = obj.pipe(xdggs.decode)
+        actual = xr_kernels.gaussian_kernel(obj_, **kwargs)
+
+        kernel_sum = actual.sum(dim="input_cells")
+
+        assert actual.count() == actual.size
+        np.testing.assert_allclose(kernel_sum.data.todense(), 1)
