@@ -48,6 +48,31 @@ class LinearRampPadding(Padding):
 
 
 @dataclass
+class AggregationPadding(Padding):
+    """
+    Pad by aggregating neighbouring pixels
+
+    Parameters
+    ----------
+    agg : callable
+        The aggregation function. Used to aggregate over the second dimension
+    data_indices : array-like
+        The data indices to aggregate over. Must have 2 dimensions, with the first having
+        the same size as ``insert_indices``.
+    """
+
+    agg: callable
+    data_indices: _ArrayLike
+
+    def apply(self, data):
+        mask = self.data_indices != -1
+
+        pad_values = self.agg(data[..., self.data_indices], where=mask, axis=-1)
+
+        return np.insert(data, self.insert_indices, pad_values, axis=-1)
+
+
+@dataclass
 class DataPadding(Padding):
     data_indices: _ArrayLike
 
@@ -88,6 +113,31 @@ def reflect_mode(cell_ids, neighbours, grid_info):
     pass
 
 
+def agg_mode(cell_ids, neighbours, grid_info, *, agg, ring):
+    all_cell_ids = np.unique(neighbours)
+    new_cell_ids = np.setdiff1d(
+        all_cell_ids, np.concatenate((np.array([-1]), cell_ids))
+    )
+
+    pad_neighbours = search_neighbours(
+        new_cell_ids,
+        resolution=grid_info.resolution,
+        indexing_scheme=grid_info.indexing_scheme,
+        ring=ring,
+    )
+
+    data_indices = np.where(np.isin(pad_neighbours, cell_ids), pad_neighbours, -1)
+    insert_indices = np.searchsorted(cell_ids, new_cell_ids)
+
+    return AggregationPadding(
+        cell_ids=all_cell_ids,
+        insert_indices=insert_indices,
+        grid_info=grid_info,
+        agg=agg,
+        data_indices=data_indices,
+    )
+
+
 def pad(
     cell_ids,
     *,
@@ -116,6 +166,10 @@ def pad(
           to ``end_value``. For ring 1, this is the same as ``mode="constant"``
         - "edge": fill the padded cells with the values at the edge of the array.
         - "reflect": pad with the reflected values.
+        - "mean": pad with the mean of the neighbours.
+        - "minimum": pad with the minimum of the neighbours.
+        - "maximum": pad with the maximum of the neighbours.
+        - "median": pad with the median of the neighbours.
     constant_value : scalar, default: 0
         The constant value used in constant mode.
     end_value : scalar, default: 0
@@ -157,6 +211,10 @@ def pad(
         "linear_ramp": partial(linear_ramp_mode, end_value=end_value, ring=ring),
         "edge": edge_mode,
         "reflect_mode": partial(reflect_mode, reflect_type=reflect_type),
+        "mean": partial(agg_mode, agg=np.mean, ring=ring),
+        "maximum": partial(agg_mode, agg=np.max, ring=ring),
+        "minimum": partial(agg_mode, agg=np.min, ring=ring),
+        "median": partial(agg_mode, agg=np.median, ring=ring),
     }
 
     mode_func = modes.get(mode)
