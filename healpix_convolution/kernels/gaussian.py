@@ -49,11 +49,11 @@ def gaussian_kernel(
     indexing_scheme : {"nested", "ring"}
         The healpix indexing scheme
     sigma : float
-        The standard deviation of the gaussian kernel
+        The standard deviation of the gaussian function in radians.
     truncate : float, default: 4.0
         Truncate the kernel after this many multiples of ``sigma``.
     kernel_size : int, optional
-        If given, determines the size of the kernel. In that case, ``truncate`` is ignored.
+        If given, will be used instead of ``truncate`` to determine the size of the kernel.
     value_threshold : float, optional
         If given, drop all kernel weights whose absolute value is smaller than this threshold.
 
