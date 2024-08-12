@@ -125,8 +125,9 @@ def agg_mode(cell_ids, neighbours, grid_info, *, agg, ring):
         indexing_scheme=grid_info.indexing_scheme,
         ring=ring,
     )
+    mask = np.isin(pad_neighbours, cell_ids)
 
-    data_indices = np.where(np.isin(pad_neighbours, cell_ids), pad_neighbours, -1)
+    data_indices = np.where(mask, np.searchsorted(cell_ids, pad_neighbours), -1)
     insert_indices = np.searchsorted(cell_ids, new_cell_ids)
 
     return AggregationPadding(
