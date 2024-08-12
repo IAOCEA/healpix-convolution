@@ -148,6 +148,7 @@ def pad(
     constant_value=0,
     end_value=0,
     reflect_type="even",
+    initial=0,
 ):
     """pad an array
 
@@ -177,6 +178,8 @@ def pad(
         The othermost value to interpolate to. Only used in linear ramp mode.
     reflect_type : {"even", "odd"}, default: "even"
         The reflect type. Only used in reflect mode.
+    initial : scalar, default: 0
+        The identity to use in maximum / minimum mode.
 
     Returns
     -------
@@ -217,8 +220,8 @@ def pad(
         "edge": edge_mode,
         "reflect_mode": partial(reflect_mode, reflect_type=reflect_type),
         "mean": partial(agg_mode, agg=np.mean, ring=ring),
-        "maximum": partial(agg_mode, agg=np.max, ring=ring),
-        "minimum": partial(agg_mode, agg=np.min, ring=ring),
+        "maximum": partial(agg_mode, agg=partial(np.max, initial=initial), ring=ring),
+        "minimum": partial(agg_mode, agg=partial(np.min, initial=initial), ring=ring),
         "median": partial(agg_mode, agg=np.median, ring=ring),
     }
 
