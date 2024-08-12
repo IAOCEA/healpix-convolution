@@ -171,7 +171,6 @@ def pad(
         - "mean": pad with the mean of the neighbours.
         - "minimum": pad with the minimum of the neighbours.
         - "maximum": pad with the maximum of the neighbours.
-        - "median": pad with the median of the neighbours.
     constant_value : scalar, default: 0
         The constant value used in constant mode.
     end_value : scalar, default: 0
@@ -222,7 +221,6 @@ def pad(
         "mean": partial(agg_mode, agg=np.mean, ring=ring),
         "maximum": partial(agg_mode, agg=partial(np.max, initial=initial), ring=ring),
         "minimum": partial(agg_mode, agg=partial(np.min, initial=initial), ring=ring),
-        "median": partial(agg_mode, agg=np.median, ring=ring),
     }
 
     mode_func = modes.get(mode)
