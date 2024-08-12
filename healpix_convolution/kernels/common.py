@@ -19,7 +19,9 @@ def create_sparse(cell_ids, neighbours, weights, value_threshold):
 
     coords = np.stack([row_indices, column_indices], axis=0)
 
-    mask = (neighbours_ != -1) & (np.abs(weights) >= value_threshold)
+    mask = neighbours_ != 1
+    if value_threshold is not None:
+        mask = np.logical_and(mask, np.abs(weights) >= value_threshold)
 
     weights_ = np.reshape(weights, (-1,))[mask]
     coords_ = coords[..., mask]
