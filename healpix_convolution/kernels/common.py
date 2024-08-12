@@ -4,7 +4,7 @@ import numpy as np
 import sparse
 
 
-def create_sparse(cell_ids, neighbours, weights, value_threshold):
+def create_sparse(cell_ids, neighbours, weights, weights_threshold):
     neighbours_ = np.reshape(neighbours, (-1,))
 
     all_cell_ids = np.unique(neighbours_)
@@ -20,8 +20,8 @@ def create_sparse(cell_ids, neighbours, weights, value_threshold):
     coords = np.stack([row_indices, column_indices], axis=0)
 
     mask = neighbours_ != 1
-    if value_threshold is not None:
-        mask = np.logical_and(mask, np.abs(weights) >= value_threshold)
+    if weights_threshold is not None:
+        mask = np.logical_and(mask, np.abs(weights) >= weights_threshold)
 
     weights_ = np.reshape(weights, (-1,))[mask]
     coords_ = coords[..., mask]
