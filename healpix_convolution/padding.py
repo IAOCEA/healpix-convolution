@@ -67,7 +67,13 @@ class AggregationPadding(Padding):
     def apply(self, data):
         mask = self.data_indices != -1
 
-        pad_values = self.agg(data[..., self.data_indices], where=mask, axis=-1)
+        new_shape = data.shape[:-1] + self.data_indices.shape
+        data_values_ = np.reshape(
+            data[..., np.reshape(self.data_indices, (-1,))], new_shape
+        )
+        data_values = np.where(mask, data_values_, np.nan)
+
+        pad_values = self.agg(data_values, axis=-1)
 
         return np.insert(data, self.insert_indices, pad_values, axis=-1)
 
@@ -148,7 +154,6 @@ def pad(
     constant_value=0,
     end_value=0,
     reflect_type="even",
-    initial=0,
 ):
     """pad an array
 
@@ -218,9 +223,10 @@ def pad(
         "linear_ramp": partial(linear_ramp_mode, end_value=end_value, ring=ring),
         "edge": edge_mode,
         "reflect_mode": partial(reflect_mode, reflect_type=reflect_type),
-        "mean": partial(agg_mode, agg=np.mean, ring=ring),
-        "maximum": partial(agg_mode, agg=partial(np.max, initial=initial), ring=ring),
-        "minimum": partial(agg_mode, agg=partial(np.min, initial=initial), ring=ring),
+        "mean": partial(agg_mode, agg=np.nanmean, ring=ring),
+        "maximum": partial(agg_mode, agg=np.nanmax, ring=ring),
+        "minimum": partial(agg_mode, agg=np.nanmin, ring=ring),
+        "median": partial(agg_mode, agg=np.nanmedian, ring=ring),
     }
 
     mode_func = modes.get(mode)
