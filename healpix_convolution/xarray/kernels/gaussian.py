@@ -15,7 +15,11 @@ def compute_ring(grid_info, sigma, kernel_size, truncate):
 
 
 def gaussian_kernel(
-    cell_ids, sigma: float, truncate: float = 4.0, kernel_size: int | None = None
+    cell_ids,
+    sigma: float,
+    truncate: float = 4.0,
+    kernel_size: int | None = None,
+    value_threshold: float | None = None,
 ):
     """Create a symmetric gaussian kernel for the given cell ids
 
@@ -26,9 +30,12 @@ def gaussian_kernel(
     sigma : float
         The standard deviation of the gaussian function in radians.
     truncate : float, default: 4.0
-        Truncate the kernel after this many multiples of sigma.
+        Truncate the kernel after this many multiples of ``sigma``.
     kernel_size : int, optional
         If given, will be used instead of ``truncate`` to determine the size of the kernel.
+    value_threshold : float, optional
+        If given, drop all kernel weights whose absolute value is smaller than this threshold.
+
 
     Returns
     -------
@@ -44,6 +51,7 @@ def gaussian_kernel(
         sigma=sigma,
         truncate=truncate,
         kernel_size=kernel_size,
+        value_threshold=value_threshold,
     )
 
     if kernel_size is not None:
