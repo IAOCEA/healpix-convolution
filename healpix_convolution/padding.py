@@ -48,6 +48,37 @@ class LinearRampPadding(Padding):
 
 
 @dataclass
+class AggregationPadding(Padding):
+    """
+    Pad by aggregating neighbouring pixels
+
+    Parameters
+    ----------
+    agg : callable
+        The aggregation function. Used to aggregate over the second dimension
+    data_indices : array-like
+        The data indices to aggregate over. Must have 2 dimensions, with the first having
+        the same size as ``insert_indices``.
+    """
+
+    agg: callable
+    data_indices: _ArrayLike
+
+    def apply(self, data):
+        mask = self.data_indices != -1
+
+        new_shape = data.shape[:-1] + self.data_indices.shape
+        data_values_ = np.reshape(
+            data[..., np.reshape(self.data_indices, (-1,))], new_shape
+        )
+        data_values = np.where(mask, data_values_, np.nan)
+
+        pad_values = self.agg(data_values, axis=-1)
+
+        return np.insert(data, self.insert_indices, pad_values, axis=-1)
+
+
+@dataclass
 class DataPadding(Padding):
     data_indices: _ArrayLike
 
@@ -88,6 +119,32 @@ def reflect_mode(cell_ids, neighbours, grid_info):
     pass
 
 
+def agg_mode(cell_ids, neighbours, grid_info, *, agg, ring):
+    all_cell_ids = np.unique(neighbours)
+    new_cell_ids = np.setdiff1d(
+        all_cell_ids, np.concatenate((np.array([-1]), cell_ids))
+    )
+
+    pad_neighbours = search_neighbours(
+        new_cell_ids,
+        resolution=grid_info.resolution,
+        indexing_scheme=grid_info.indexing_scheme,
+        ring=ring,
+    )
+    mask = np.isin(pad_neighbours, cell_ids)
+
+    data_indices = np.where(mask, np.searchsorted(cell_ids, pad_neighbours), -1)
+    insert_indices = np.searchsorted(cell_ids, new_cell_ids)
+
+    return AggregationPadding(
+        cell_ids=all_cell_ids,
+        insert_indices=insert_indices,
+        grid_info=grid_info,
+        agg=agg,
+        data_indices=data_indices,
+    )
+
+
 def pad(
     cell_ids,
     *,
@@ -116,18 +173,27 @@ def pad(
           to ``end_value``. For ring 1, this is the same as ``mode="constant"``
         - "edge": fill the padded cells with the values at the edge of the array.
         - "reflect": pad with the reflected values.
+        - "mean": pad with the mean of the neighbours.
+        - "minimum": pad with the minimum of the neighbours.
+        - "maximum": pad with the maximum of the neighbours.
     constant_value : scalar, default: 0
         The constant value used in constant mode.
     end_value : scalar, default: 0
         The othermost value to interpolate to. Only used in linear ramp mode.
     reflect_type : {"even", "odd"}, default: "even"
         The reflect type. Only used in reflect mode.
+    initial : scalar, default: 0
+        The identity to use in maximum / minimum mode.
 
     Returns
     -------
     padding_object : Padding
         The padding object. Can be used to apply the same padding operation for different
         arrays with the same geometry.
+
+    Warnings
+    --------
+    This assumes ``cell_ids`` is sorted, and will give wrong results if it is not.
     """
     # TODO: figure out how to allow reusing indices. How this works depends on the mode:
     # - in constant mode, we have:
@@ -157,6 +223,10 @@ def pad(
         "linear_ramp": partial(linear_ramp_mode, end_value=end_value, ring=ring),
         "edge": edge_mode,
         "reflect_mode": partial(reflect_mode, reflect_type=reflect_type),
+        "mean": partial(agg_mode, agg=np.nanmean, ring=ring),
+        "maximum": partial(agg_mode, agg=np.nanmax, ring=ring),
+        "minimum": partial(agg_mode, agg=np.nanmin, ring=ring),
+        "median": partial(agg_mode, agg=np.nanmedian, ring=ring),
     }
 
     mode_func = modes.get(mode)

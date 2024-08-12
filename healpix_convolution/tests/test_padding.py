@@ -120,6 +120,22 @@ class TestArray:
                 ),
                 id="constant-ring2-0",
             ),
+            pytest.param(
+                1,
+                "mean",
+                {},
+                np.array([163, 166, 167, 169, 171, 172, 173, 174, 175, 178, 184, 186]),
+                np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]),
+                id="mean-ring1",
+            ),
+            pytest.param(
+                1,
+                "minimum",
+                {},
+                np.array([163, 166, 167, 169, 171, 172, 173, 174, 175, 178, 184, 186]),
+                np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]),
+                id="minimum-ring1",
+            ),
         ),
     )
     def test_pad(self, dask, ring, mode, kwargs, expected_cell_ids, expected_data):
