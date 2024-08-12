@@ -182,6 +182,10 @@ def pad(
     padding_object : Padding
         The padding object. Can be used to apply the same padding operation for different
         arrays with the same geometry.
+
+    Warnings
+    --------
+    This assumes ``cell_ids`` is sorted, and will give wrong results if it is not.
     """
     # TODO: figure out how to allow reusing indices. How this works depends on the mode:
     # - in constant mode, we have:
