@@ -36,6 +36,7 @@ def gaussian_kernel(
     sigma: float,
     truncate: float = 4.0,
     kernel_size: int | None = None,
+    value_threshold: float | None = None,
 ):
     """construct a gaussian kernel on the healpix grid
 
@@ -53,6 +54,8 @@ def gaussian_kernel(
         Truncate the kernel after this many multiples of ``sigma``.
     kernel_size : int, optional
         If given, determines the size of the kernel. In that case, ``truncate`` is ignored.
+    value_threshold : float, optional
+        If given, drop all kernel weights whose absolute value is smaller than this threshold.
 
     Returns
     -------
@@ -78,4 +81,4 @@ def gaussian_kernel(
     d = angular_distances(nb, resolution=resolution, indexing_scheme=indexing_scheme)
     weights = gaussian_function(d, sigma, mask=nb == -1)
 
-    return create_sparse(cell_ids, nb, weights)
+    return create_sparse(cell_ids, nb, weights, value_threshold)
