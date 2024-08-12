@@ -4,7 +4,7 @@ import numpy as np
 import sparse
 
 
-def create_sparse(cell_ids, neighbours, weights, weights_threshold):
+def create_sparse(cell_ids, neighbours, weights, weights_threshold=None):
     neighbours_ = np.reshape(neighbours, (-1,))
 
     all_cell_ids = np.unique(neighbours_)
