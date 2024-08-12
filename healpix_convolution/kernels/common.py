@@ -6,6 +6,7 @@ import sparse
 
 def create_sparse(cell_ids, neighbours, weights, weights_threshold=None):
     neighbours_ = np.reshape(neighbours, (-1,))
+    reshaped_weights = np.reshape(weights, (-1,))
 
     all_cell_ids = np.unique(neighbours_)
     if all_cell_ids[0] == -1:
@@ -19,11 +20,11 @@ def create_sparse(cell_ids, neighbours, weights, weights_threshold=None):
 
     coords = np.stack([row_indices, column_indices], axis=0)
 
-    mask = neighbours_ != 1
+    mask = neighbours_ != -1
     if weights_threshold is not None:
-        mask = np.logical_and(mask, np.abs(weights) >= weights_threshold)
+        mask = np.logical_and(mask, np.abs(reshaped_weights) >= weights_threshold)
 
-    weights_ = np.reshape(weights, (-1,))[mask]
+    weights_ = reshaped_weights[mask]
     coords_ = coords[..., mask]
 
     if isinstance(weights_, da.Array):
