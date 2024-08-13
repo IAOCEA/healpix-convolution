@@ -25,7 +25,7 @@ class Padding:
         )
 
     def apply(self, obj):
-        return utils.call_on_dataset(self._apply, obj)
+        return utils.call_on_dataset(self._apply, obj).pipe(xdggs.decode)
 
 
 def pad(
