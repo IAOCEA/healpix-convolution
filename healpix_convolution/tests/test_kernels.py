@@ -48,6 +48,55 @@ def test_create_sparse(cell_ids, neighbours, weights):
     assert actual.shape == expected_shape
 
 
+@pytest.mark.parametrize(
+    ["cell_ids", "neighbours", "threshold"],
+    (
+        pytest.param(
+            np.array([0, 1]),
+            np.array(
+                [[0, 17, 19, 2, 3, 1, 23, 22, 35], [3, 2, 13, 15, 11, 7, 6, 1, 0]]
+            ),
+            None,
+        ),
+        pytest.param(
+            np.array([0, 1]),
+            np.array(
+                [[0, 17, 19, 2, 3, 1, 23, 22, 35], [3, 2, 13, 15, 11, 7, 6, 1, 0]]
+            ),
+            0.1,
+        ),
+        pytest.param(
+            np.array([3, 2]),
+            np.array(
+                [[3, 2, 13, 15, 11, 7, 6, 1, 0], [2, 19, -1, 13, 15, 3, 1, 0, 17]]
+            ),
+            0.1,
+        ),
+    ),
+)
+def test_create_sparse_threshold(cell_ids, neighbours, threshold):
+    expected_cell_ids = np.unique(neighbours)
+    if expected_cell_ids[0] == -1:
+        expected_cell_ids = expected_cell_ids[1:]
+
+    weights = np.reshape(neighbours / np.sum(neighbours, axis=1, keepdims=True), (-1,))
+
+    actual_cell_ids, actual = np_kernels.common.create_sparse(
+        cell_ids, neighbours, weights, weights_threshold=threshold
+    )
+
+    expected_nnz = (
+        np.sum(abs(weights) >= threshold) if threshold is not None else weights.size
+    )
+
+    np.testing.assert_equal(actual_cell_ids, expected_cell_ids)
+
+    expected_shape = (cell_ids.size, expected_cell_ids.size)
+    assert hasattr(actual, "nnz"), "not a sparse matrix"
+    assert actual.shape == expected_shape
+    assert actual.nnz == expected_nnz, "non-zero entries don't match"
+
+
 def fit_polynomial(x, y, deg):
     mask = y > 0
     x_ = x[mask]
