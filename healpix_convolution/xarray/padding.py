@@ -11,6 +11,9 @@ from healpix_convolution.xarray import utils
 class Padding:
     padding: padding.Padding
 
+    def _apply_one(self, arr):
+        return xr.DataArray(self.padding.apply(arr.data), dims="cells")
+
     def _apply(self, ds):
         to_drop = [name for name, coord in ds.coords.items() if "cells" in coord.dims]
         cell_ids = xr.Variable(
@@ -18,9 +21,7 @@ class Padding:
         )
 
         return (
-            ds.drop_vars(to_drop)
-            .map(self.padding.apply)
-            .assign_coords(cell_ids=cell_ids)
+            ds.drop_vars(to_drop).map(self._apply_one).assign_coords(cell_ids=cell_ids)
         )
 
     def apply(self, obj):
