@@ -10,7 +10,7 @@ try:
     import dask.array as da
 
     has_dask = True
-except ImportError:
+except ImportError:  # pragma: no cover
     has_dask = False
     da = None
 

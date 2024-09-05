@@ -26,8 +26,21 @@ class ConstantPadding(Padding):
     def apply(self, data):
         common_dtype = np.result_type(data, self.constant_value)
 
+        if hasattr(data, "chunks"):
+            import dask.array as da
+
+            values = da.full_like(
+                data,
+                shape=self.insert_indices.shape,
+                dtype=common_dtype,
+                fill_value=self.constant_value,
+                chunks=data.chunks[0][-1],
+            )
+        else:
+            values = self.constant_value
+
         return np.insert(
-            data.astype(common_dtype), self.insert_indices, self.constant_value, axis=-1
+            data.astype(common_dtype), self.insert_indices, values, axis=-1
         )
 
 

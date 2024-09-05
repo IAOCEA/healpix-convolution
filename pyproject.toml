@@ -27,6 +27,14 @@ packages = ["healpix_convolution"]
 [tool.setuptools_scm]
 fallback_version = "9999"
 
+[tool.coverage.run]
+source = ["healpix_convolution"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING"]
+
 [tool.ruff]
 builtins = ["ellipsis"]
 exclude = [

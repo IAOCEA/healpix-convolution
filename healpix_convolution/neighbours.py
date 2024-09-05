@@ -7,7 +7,7 @@ try:
     import dask.array as da
 
     dask_array_type = (da.Array,)
-except ImportError:
+except ImportError:  # pragma: no cover
     dask_array_type = ()
     da = None
 
@@ -219,17 +219,3 @@ def neighbours(cell_ids, *, resolution, indexing_scheme, ring=1):
         return _neighbours(
             cell_ids, offsets=offsets, nside=nside, indexing_scheme=indexing_scheme
         )
-
-
-if __name__ == "__main__":
-    resolution = 5
-    cell_ids = np.arange(12 * 4**resolution, dtype="int16")
-    indexing_scheme = "nested"
-
-    ring = 1
-
-    n = neighbours(
-        cell_ids, resolution=resolution, indexing_scheme=indexing_scheme, ring=ring
-    )
-    print(n)
-    print(n.shape)
