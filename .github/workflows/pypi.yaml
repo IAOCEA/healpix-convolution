@@ -1,0 +1,67 @@
+name: Upload Package to PyPI
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build-artifacts:
+    runs-on: ubuntu-latest
+    if: github.repository == 'IAOCEA/healpix-convolution'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        name: Install Python
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build twine
+
+      - name: Build tarball and wheels
+        run: |
+          git clean -xdf
+          git restore -SW .
+          python -m build --outdir dist/ .
+
+      - name: Check built artifacts
+        run: |
+          python -m twine check --strict dist/*
+          pwd
+          if [ -f dist/healpix-convolution-0.0.0.tar.gz ]; then
+            echo "❌ INVALID VERSION NUMBER"
+            exit 1
+          else
+            echo "✅ Looks good"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: releases
+          path: dist
+
+  upload-to-pypi:
+    needs: build-artifacts
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+
+    environment:
+      name: pypi
+      url: https://pypi.org/p/healpix-convolution
+    permissions:
+      id-token: write
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: releases
+          path: dist
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@ec4db0b4ddc65acdf4bff5fa45ac92d78b56bdf0
+        with:
+          verbose: true
