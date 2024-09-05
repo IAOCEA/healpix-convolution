@@ -8,7 +8,7 @@ from healpix_convolution.xarray import padding as xr_padding
 
 try:
     import dask.array as da
-except ImportError:
+except ImportError:  # pragma: no cover
     da = None
     dask_array_type = ()
 
