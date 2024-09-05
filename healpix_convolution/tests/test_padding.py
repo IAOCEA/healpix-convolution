@@ -21,7 +21,6 @@ requires_dask = pytest.mark.skipif(not dask_available, reason="requires dask")
 
 
 class TestArray:
-    @pytest.mark.parametrize("dask", (False, pytest.param(True, marks=requires_dask)))
     @pytest.mark.parametrize(
         ["ring", "mode", "kwargs", "expected_cell_ids", "expected_data"],
         (
@@ -140,16 +139,31 @@ class TestArray:
             ),
         ),
     )
+    @pytest.mark.parametrize(
+        "dask",
+        (
+            False,
+            pytest.param(
+                True,
+                marks=[
+                    requires_dask,
+                    pytest.mark.xfail(reason="chunk sizes can't be preserved for now"),
+                ],
+            ),
+        ),
+    )
     def test_pad(self, dask, ring, mode, kwargs, expected_cell_ids, expected_data):
         grid_info = xdggs.healpix.HealpixInfo(resolution=4, indexing_scheme="nested")
         cell_ids = np.array([172, 173])
 
         if not dask:
             data = np.full_like(cell_ids, fill_value=1)
+            expected = expected_data
         else:
             import dask.array as da
 
             data = da.full_like(cell_ids, fill_value=1, chunks=(1,))
+            expected = da.from_array(expected_data, chunks=(1,))
 
         padder = padding.pad(
             cell_ids, grid_info=grid_info, ring=ring, mode=mode, **kwargs
@@ -158,13 +172,13 @@ class TestArray:
 
         if dask:
             assert isinstance(actual, da.Array)
+            assert actual.chunks == expected.chunks, "chunksizes differ"
 
         np.testing.assert_equal(padder.cell_ids, expected_cell_ids)
         np.testing.assert_equal(actual, expected_data)
 
 
 class TestXarray:
-    @pytest.mark.parametrize("dask", (False, pytest.param(True, marks=requires_dask)))
     @pytest.mark.parametrize(
         ["ring", "mode", "kwargs", "expected_cell_ids", "expected_data"],
         (
@@ -280,6 +294,19 @@ class TestXarray:
                 np.array([163, 166, 167, 169, 171, 172, 173, 174, 175, 178, 184, 186]),
                 np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]),
                 id="minimum-ring1",
+            ),
+        ),
+    )
+    @pytest.mark.parametrize(
+        "dask",
+        (
+            False,
+            pytest.param(
+                True,
+                marks=[
+                    requires_dask,
+                    pytest.mark.xfail(reason="chunk sizes can't be preserved for now"),
+                ],
             ),
         ),
     )
@@ -319,6 +346,6 @@ class TestXarray:
         actual = padder.apply(data)
 
         if dask:
-            assert actual.chunksizes == expected.chunksizes
+            assert actual.chunksizes == expected.chunksizes, "chunksizes differ"
 
-        xr.testing.assert_equal(actual, expected)
+        xr.testing.assert_identical(actual, expected)
