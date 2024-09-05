@@ -6,5 +6,5 @@ from healpix_convolution.neighbours import neighbours  # noqa: F401
 
 try:
     __version__ = version("healpix_convolution")
-except Exception:
+except Exception:  # pragma: no cover
     __version__ = "9999"

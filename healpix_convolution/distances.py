@@ -5,7 +5,7 @@ try:
     import dask.array as da
 
     dask_array_type = (da.Array,)
-except ImportError:
+except ImportError:  # pragma: no cover
     da = None
     dask_array_type = ()
 
