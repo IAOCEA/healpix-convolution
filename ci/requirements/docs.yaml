@@ -2,6 +2,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.12
-  - sphinx>=4
+  - sphinx>=7
   - sphinx_book_theme
+  - myst-parser
   - ipython
