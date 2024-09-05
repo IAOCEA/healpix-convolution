@@ -143,13 +143,7 @@ class TestArray:
         "dask",
         (
             False,
-            pytest.param(
-                True,
-                marks=[
-                    requires_dask,
-                    pytest.mark.xfail(reason="chunk sizes can't be preserved for now"),
-                ],
-            ),
+            pytest.param(True, marks=requires_dask),
         ),
     )
     def test_pad(self, dask, ring, mode, kwargs, expected_cell_ids, expected_data):
@@ -301,13 +295,7 @@ class TestXarray:
         "dask",
         (
             False,
-            pytest.param(
-                True,
-                marks=[
-                    requires_dask,
-                    pytest.mark.xfail(reason="chunk sizes can't be preserved for now"),
-                ],
-            ),
+            pytest.param(True, marks=requires_dask),
         ),
     )
     @pytest.mark.parametrize("type_", (xr.Dataset, xr.DataArray))
