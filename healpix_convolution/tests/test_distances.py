@@ -21,7 +21,7 @@ def test_angle_between_vectors():
         (np.array([[2, 71, 8]]), np.array([[0, 0.25637566, 0.25574741]])),
     ),
 )
-def test_distances_numpy(neighbours, expected):
+def test_angular_distances_numpy(neighbours, expected):
     actual = hds.angular_distances(neighbours, resolution=2, indexing_scheme="nested")
 
     np.testing.assert_allclose(actual, expected)
