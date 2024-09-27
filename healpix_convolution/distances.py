@@ -16,6 +16,16 @@ def cell_ids2vectors(cell_ids, nside, nest):
     return np.reshape(vecs, cell_ids.shape + (3,))
 
 
+def angle_between_vectors(a, b, axis):
+    length_a = np.linalg.norm(a, axis=axis)
+    length_b = np.linalg.norm(b, axis=axis)
+    dot_product = np.sum(a * b, axis=axis)
+
+    argument = np.clip(dot_product / (length_a * length_b), -1, 1)
+
+    return np.arccos(argument)
+
+
 def _distances(a, b, axis, nside, nest):
     vec_a = cell_ids2vectors(a, nside, nest)
 
@@ -24,10 +34,7 @@ def _distances(a, b, axis, nside, nest):
     vec_b_ = cell_ids2vectors(np.where(mask, b, 0), nside, nest)
     vec_b = np.where(mask[..., None], vec_b_, np.nan)
 
-    dot_product = np.abs(np.sum(vec_a * vec_b, axis=axis))
-    cross_product = np.linalg.norm(np.cross(vec_a, vec_b, axis=axis), axis=axis)
-
-    return np.arctan2(cross_product, dot_product)
+    return angle_between_vectors(vec_a, vec_b, axis=axis)
 
 
 def angular_distances(neighbours, *, resolution, indexing_scheme="nested", axis=None):

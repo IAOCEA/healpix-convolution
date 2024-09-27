@@ -4,6 +4,16 @@ import pytest
 import healpix_convolution.distances as hds
 
 
+def test_angle_between_vectors():
+    angles = np.linspace(0, 2 * np.pi, 10)
+    vectors = np.stack([np.cos(angles), np.sin(angles), np.zeros_like(angles)], axis=-1)
+
+    actual = hds.angle_between_vectors(vectors[:1, :], vectors, axis=-1)
+    expected = np.pi - abs(angles - np.pi)
+
+    np.testing.assert_allclose(actual, expected)
+
+
 @pytest.mark.parametrize(
     ["neighbours", "expected"],
     (
@@ -11,7 +21,7 @@ import healpix_convolution.distances as hds
         (np.array([[2, 71, 8]]), np.array([[0, 0.25637566, 0.25574741]])),
     ),
 )
-def test_distances_numpy(neighbours, expected):
+def test_angular_distances_numpy(neighbours, expected):
     actual = hds.angular_distances(neighbours, resolution=2, indexing_scheme="nested")
 
     np.testing.assert_allclose(actual, expected)
