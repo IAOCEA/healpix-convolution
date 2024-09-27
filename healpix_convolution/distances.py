@@ -17,10 +17,13 @@ def cell_ids2vectors(cell_ids, nside, nest):
 
 
 def angle_between_vectors(a, b, axis):
+    length_a = np.linalg.norm(a, axis=axis)
+    length_b = np.linalg.norm(b, axis=axis)
     dot_product = np.sum(a * b, axis=axis)
-    return np.arccos(
-        dot_product / (np.linalg.norm(a, axis=axis) * np.linalg.norm(b, axis=axis))
-    )
+
+    argument = np.clip(dot_product / (length_a * length_b), -1, 1)
+
+    return np.arccos(argument)
 
 
 def _distances(a, b, axis, nside, nest):
