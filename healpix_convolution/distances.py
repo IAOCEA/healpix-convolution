@@ -16,6 +16,13 @@ def cell_ids2vectors(cell_ids, nside, nest):
     return np.reshape(vecs, cell_ids.shape + (3,))
 
 
+def angle_between_vectors(a, b, axis):
+    dot_product = np.sum(a * b, axis=axis)
+    return np.arccos(
+        dot_product / (np.linalg.norm(a, axis=axis) * np.linalg.norm(b, axis=axis))
+    )
+
+
 def _distances(a, b, axis, nside, nest):
     vec_a = cell_ids2vectors(a, nside, nest)
 
