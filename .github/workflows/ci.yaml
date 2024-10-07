@@ -60,7 +60,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup micromamba
-        uses: mamba-org/setup-micromamba@v1
+        uses: mamba-org/setup-micromamba@v2
         with:
           environment-file: ci/requirements/environment.yaml
           environment-name: healpix-convolution-tests
