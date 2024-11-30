@@ -3,6 +3,6 @@ channels:
 dependencies:
   - python=3.12
   - sphinx>=7
-  - sphinx_book_theme
+  - sphinx-book-theme
   - myst-parser
   - ipython
