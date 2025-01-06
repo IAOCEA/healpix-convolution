@@ -13,6 +13,7 @@ __pycache__/
 
 # tools
 .ipynb_checkpoints/
+.virtual_documents/
 .hypothesis/
 .pytest_cache
 .coverage
