@@ -147,7 +147,7 @@ class TestArray:
         ),
     )
     def test_pad(self, dask, ring, mode, kwargs, expected_cell_ids, expected_data):
-        grid_info = xdggs.healpix.HealpixInfo(resolution=4, indexing_scheme="nested")
+        grid_info = xdggs.healpix.HealpixInfo(level=4, indexing_scheme="nested")
         cell_ids = np.array([172, 173])
 
         if not dask:
@@ -302,7 +302,7 @@ class TestXarray:
     def test_pad(
         self, dask, ring, mode, kwargs, expected_cell_ids, expected_data, type_
     ):
-        grid_info = xdggs.healpix.HealpixInfo(resolution=4, indexing_scheme="nested")
+        grid_info = xdggs.healpix.HealpixInfo(level=4, indexing_scheme="nested")
         cell_ids = np.array([172, 173])
 
         if not dask:
