@@ -8,3 +8,5 @@ try:
     __version__ = version("healpix_convolution")
 except Exception:  # pragma: no cover
     __version__ = "9999"
+
+__all__ = ["kernels", "angular_distances", "neighbours"]
