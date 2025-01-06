@@ -9,6 +9,7 @@
 ### neighbours
 
 ```{autosummary}
+---
 toctree: generated
 ---
 
@@ -19,6 +20,7 @@ angular_distances
 ### kernels
 
 ```{autosummary}
+---
 toctree: generated
 ---
 kernels.gaussian_kernel
@@ -27,6 +29,7 @@ kernels.gaussian_kernel
 ### convolution
 
 ```{autosummary}
+---
 toctree: generated
 ---
 
