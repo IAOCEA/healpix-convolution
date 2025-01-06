@@ -2,36 +2,36 @@
 
 ## array
 
-```{currentmodule} healpix_convolution
-
-```
-
 ### neighbours
 
-```{autosummary}
----
-toctree: generated
----
+```{eval-rst}
+.. currentmodule:: healpix_convolution
 
-neighbours
-angular_distances
+.. autosummary::
+   :toctree: generated
+
+   neighbours
+   angular_distances
 ```
 
 ### kernels
 
-```{autosummary}
----
-toctree: generated
----
-kernels.gaussian_kernel
+```{eval-rst}
+.. currentmodule:: healpix_convolution
+
+.. autosummary::
+   :toctree: generated
+
+   kernels.gaussian_kernel
 ```
 
 ### convolution
 
-```{autosummary}
----
-toctree: generated
----
+```{eval-rst}
+.. currentmodule:: healpix_convolution
 
-convolve
+.. autosummary::
+   :toctree: generated/
+
+   convolve
 ```

@@ -17,6 +17,7 @@ root_doc = "index"
 # ones.
 extensions = [
     "sphinx.ext.autosummary",
+    "sphinx.ext.autodoc",
     "sphinx.ext.extlinks",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
@@ -57,8 +58,9 @@ html_theme = "sphinx_book_theme"
 autosummary_generate = True
 autodoc_typehints = "none"
 
-# -- Options for the autosummary extension -----------------------------------
+# -- Options for the napoleon extension --------------------------------------
 
+napoleon_google_docstring = False
 napoleon_numpy_docstring = True
 napoleon_use_param = False
 napoleon_use_rtype = False
@@ -87,4 +89,7 @@ napoleon_type_aliases = {
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     "sphinx": ("https://www.sphinx-doc.org/en/stable/", None),
+    "numpy": ("https://numpy.org/doc/stable", None),
+    "xarray": ("https://docs.xarray.dev/en/latest", None),
+    "sparse": ("https://sparse.pydata.org/en/latest", None),
 }
