@@ -345,7 +345,7 @@ class TestXarray:
         reconstructed_sigma = reconstruct_sigma(
             obj.cell_ids.data,
             actual.data,
-            resolution=grid_info.resolution,
+            resolution=grid_info.level,
             indexing_scheme=grid_info.indexing_scheme,
             **kwargs,
         )
