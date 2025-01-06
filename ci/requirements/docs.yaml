@@ -7,6 +7,18 @@ dependencies:
   - myst-parser
   - sphinx-design
   - ipython
+  - numba
+  - numpy
+  - dask
+  - healpy>=1.17
+  - geopandas
+  - pandas
+  - sparse>=0.15
+  - opt_einsum
+  - xarray
+  - shapely
+  - folium
+  - matplotlib-base
   - pip
   - pip:
       - -e ../..
