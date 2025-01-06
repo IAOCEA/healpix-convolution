@@ -2,6 +2,10 @@
 
 ## array
 
+```{currentmodule} healpix_convolution
+
+```
+
 ### neighbours
 
 ```{autosummary}
