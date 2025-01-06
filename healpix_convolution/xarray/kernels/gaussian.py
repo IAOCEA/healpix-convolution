@@ -10,7 +10,7 @@ def compute_ring(grid_info, sigma, kernel_size, truncate):
     else:
         import healpy as hp
 
-        cell_distance = hp.nside2resol(2**grid_info.resolution, arcmin=False)
+        cell_distance = hp.nside2resol(2**grid_info.level, arcmin=False)
         return int((truncate * sigma / cell_distance) // 2)
 
 
@@ -46,7 +46,7 @@ def gaussian_kernel(
 
     padded_cell_ids, matrix = gaussian.gaussian_kernel(
         cell_ids.data,
-        resolution=grid_info.resolution,
+        resolution=grid_info.level,
         indexing_scheme=grid_info.indexing_scheme,
         sigma=sigma,
         truncate=truncate,

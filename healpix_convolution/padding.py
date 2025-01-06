@@ -140,7 +140,7 @@ def agg_mode(cell_ids, neighbours, grid_info, *, agg, ring):
 
     pad_neighbours = search_neighbours(
         new_cell_ids,
-        resolution=grid_info.resolution,
+        resolution=grid_info.level,
         indexing_scheme=grid_info.indexing_scheme,
         ring=ring,
     )
@@ -226,7 +226,7 @@ def pad(
     # plus a method to apply the padding to data.
     neighbours = search_neighbours(
         cell_ids,
-        resolution=grid_info.resolution,
+        resolution=grid_info.level,
         indexing_scheme=grid_info.indexing_scheme,
         ring=ring,
     )
