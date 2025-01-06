@@ -5,4 +5,5 @@ dependencies:
   - sphinx>=7
   - sphinx-book-theme
   - myst-parser
+  - sphinx-design
   - ipython
