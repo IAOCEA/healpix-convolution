@@ -25,6 +25,7 @@ extensions = [
     "IPython.sphinxext.ipython_console_highlighting",
     "myst_parser",
     "sphinx_design",
+    "sphinx_remove_toctrees",
 ]
 
 extlinks = {
@@ -83,6 +84,11 @@ napoleon_type_aliases = {
     "array": ":term:`array`",
     "hashable": ":term:`hashable <name>`",
 }
+
+# -- Options for the remove-toctrees extension -------------------------------
+
+# remove generated autosummary entries from the toctrees
+remove_from_toctrees = ["generated/*"]
 
 # -- Options for the intersphinx extension -----------------------------------
 
