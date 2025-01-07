@@ -44,7 +44,7 @@ kernel
 The convolution is then just:
 
 ```{jupyter-execute}
-convolved = hc.convolve(ds, kernel)
+convolved = hc.convolve(ds, kernel).pipe(xdggs.decode)
 convolved
 ```
 
@@ -95,19 +95,20 @@ kernel
 However, since we now have boundaries we have to pad the data before convolving:
 
 ```{jupyter-execute}
-padded_ds = hc.pad(
+padding = hc.pad(
     ds["cell_ids"],
     ring=kernel.attrs["ring"],
     mode="constant",
     constant_value=0,
 )
+padded_ds = padding.apply(ds)
 padded_ds
 ```
 
 After that, convolving works as before (but on the padded dataset):
 
 ```{jupyter-execute}
-convolved = hc.convolve(padded_ds, kernel)
+convolved = hc.convolve(padded_ds, kernel).pipe(xdggs.decode)
 convolved
 ```
 
