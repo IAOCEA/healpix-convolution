@@ -23,6 +23,7 @@ dependencies:
   - folium
   - matplotlib-base
   - cartopy
+  - cartopy_offlinedata
   - pip
   - pip:
       - -e ../..
