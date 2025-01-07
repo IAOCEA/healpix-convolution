@@ -7,6 +7,7 @@ caption: User guide
 hidden: true
 ---
 Convolution of bare arrays <user-guide/array>
+Convolution of `xarray` objects <user-guide/xarray>
 ```
 
 ```{toctree}
