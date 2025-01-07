@@ -22,6 +22,7 @@ dependencies:
   - shapely
   - folium
   - matplotlib-base
+  - cartopy
   - pip
   - pip:
       - -e ../..
