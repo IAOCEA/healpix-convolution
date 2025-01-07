@@ -20,4 +20,6 @@ __pycache__/
 .coverage.*
 .cache
 /docs/_build/
+/docs/generated/
 .prettier_cache
+/docs/warnings.log
