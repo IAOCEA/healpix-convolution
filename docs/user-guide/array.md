@@ -51,6 +51,10 @@ convolved.shape
 On a map:
 
 ```{jupyter-execute}
+---
+okwarning: true
+---
+
 fig, axes = plt.subplots(
     ncols=2, figsize=(16, 12), subplot_kw={"projection": ccrs.Robinson()}
 )
@@ -115,6 +119,10 @@ convolved = hc.convolve(padded_data, kernel)
 Again, we can look at the result:
 
 ```{jupyter-execute}
+---
+okwarning: true
+---
+
 fig, axes = plt.subplots(
     ncols=2, figsize=(16, 12), subplot_kw={"projection": ccrs.Robinson()}
 )

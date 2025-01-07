@@ -51,6 +51,10 @@ convolved
 And we can compare the two variables:
 
 ```{jupyter-execute}
+---
+okwarning: true
+---
+
 fig, axes = plt.subplots(
     nrows=2, ncols=2, figsize=(14, 9), subplot_kw={"projection": ccrs.Robinson()}
 )
@@ -115,6 +119,10 @@ convolved
 Again, we can look at the result:
 
 ```{jupyter-execute}
+---
+okwarning: true
+---
+
 fig, axes = plt.subplots(
     nrows=2, ncols=2, figsize=(14, 9), subplot_kw={"projection": ccrs.Robinson()}
 )
