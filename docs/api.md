@@ -25,6 +25,17 @@
    kernels.gaussian_kernel
 ```
 
+### padding
+
+```{eval-rst}
+.. currentmodule:: healpix_convolution
+
+.. autosummary::
+   :toctree: generated
+
+   pad
+```
+
 ### convolution
 
 ```{eval-rst}

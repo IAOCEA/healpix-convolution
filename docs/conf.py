@@ -92,4 +92,5 @@ intersphinx_mapping = {
     "numpy": ("https://numpy.org/doc/stable", None),
     "xarray": ("https://docs.xarray.dev/en/latest", None),
     "sparse": ("https://sparse.pydata.org/en/latest", None),
+    "xdggs": ("https://xdggs.readthedocs.io/en/latest", None),
 }

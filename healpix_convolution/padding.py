@@ -11,11 +11,24 @@ from healpix_convolution.neighbours import neighbours as search_neighbours
 
 @dataclass
 class Padding:
+    """Base class for all cached padding operations
+
+    Parameters
+    ----------
+    cell_ids: array_like
+        The cell ids of the padding cells
+    insert_indices: array_like
+        Indices of where to insert the padding cells to keep the input cell ids sorted.
+    grid_info: xdggs.DGGSInfo
+        The grid parameters
+    """
+
     cell_ids: _ArrayLike = field(repr=False)
     insert_indices: _ArrayLike = field(repr=False)
     grid_info: DGGSInfo = field(repr=False)
 
     def apply(self, data):
+        """apply the padding to the data"""
         raise NotImplementedError()
 
 
@@ -200,7 +213,7 @@ def pad(
 
     Returns
     -------
-    padding_object : Padding
+    padding_object : healpix_convolution.Padding
         The padding object. Can be used to apply the same padding operation for different
         arrays with the same geometry.
 
