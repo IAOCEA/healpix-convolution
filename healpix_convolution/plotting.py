@@ -5,7 +5,16 @@ import numpy as np
 
 
 def plot_healpix(
-    data, cell_ids, *, ax, resolution, cmap="viridis", xsize=1200, title=None, **kwargs
+    data,
+    cell_ids,
+    *,
+    ax,
+    resolution,
+    cmap="viridis",
+    xsize=1200,
+    title=None,
+    features=("coastlines", "land"),
+    **kwargs,
 ):
     nside = 2**resolution
 
@@ -25,8 +34,11 @@ def plot_healpix(
     subdomain = grid_map[row_mask, :][:, col_mask]
     lon = grid_lon[row_mask, :][:, col_mask]
     lat = grid_lat[row_mask, :][:, col_mask]
-    ax.coastlines()
-    ax.add_feature(cartopy.feature.LAND, zorder=5)
+    if "coastlines" in features:
+        ax.coastlines()
+
+    if "land" in features:
+        ax.add_feature(cartopy.feature.LAND, zorder=5)
 
     if title is not None:
         ax.set_title(title)
