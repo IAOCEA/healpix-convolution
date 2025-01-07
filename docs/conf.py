@@ -26,6 +26,7 @@ extensions = [
     "myst_parser",
     "sphinx_design",
     "sphinx_remove_toctrees",
+    "jupyter_sphinx",
 ]
 
 extlinks = {

@@ -3,6 +3,15 @@
 ```{toctree}
 ---
 maxdepth: 3
+caption: User guide
+hidden: true
+---
+Convolution of bare arrays <user-guide/array>
+```
+
+```{toctree}
+---
+maxdepth: 3
 caption: Reference guide
 hidden: true
 ---
