@@ -56,14 +56,14 @@ fig, axes = plt.subplots(
 )
 
 plot_healpix(
-    data, cell_ids, ax=axes[0], resolution=grid_info.level, features=("coastlines",)
+    data, cell_ids, ax=axes[0], grid_info=grid_info, features=["coastlines"]
 )
 plot_healpix(
     convolved,
     cell_ids,
     ax=axes[1],
-    resolution=grid_info.level,
-    features=("coastlines",),
+    grid_info=grid_info,
+    features=["coastlines"],
 )
 ```
 
@@ -72,7 +72,7 @@ plot_healpix(
 Similarly to above, we also first have to define the data:
 
 ```{jupyter-execute}
-grid_info = HealpixInfo(level=4, indexing_scheme="ring")
+grid_info = HealpixInfo(level=4, indexing_scheme="nested")
 
 cell_ids = 4 * 4**grid_info.level + np.arange(4**grid_info.level)
 data = rng.normal(size=cell_ids.shape)
@@ -123,16 +123,16 @@ plot_healpix(
     data,
     cell_ids,
     ax=axes[0],
-    resolution=grid_info.level,
-    features=("coastlines",),
+    grid_info=grid_info,
+    features=["coastlines"],
     xsize=3000,
 )
 plot_healpix(
     convolved,
     cell_ids,
     ax=axes[1],
-    resolution=grid_info.level,
-    features=("coastlines",),
+    grid_info=grid_info,
+    features=["coastlines"],
     xsize=3000,
 )
 ```
