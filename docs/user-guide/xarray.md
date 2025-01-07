@@ -52,7 +52,7 @@ And we can compare the two variables:
 
 ```{jupyter-execute}
 ---
-okwarning: true
+stderr: true
 ---
 
 fig, axes = plt.subplots(
@@ -120,7 +120,7 @@ Again, we can look at the result:
 
 ```{jupyter-execute}
 ---
-okwarning: true
+stderr: true
 ---
 
 fig, axes = plt.subplots(
