@@ -9,20 +9,21 @@ def plot_healpix(
     cell_ids,
     *,
     ax,
-    resolution,
+    grid_info,
     cmap="viridis",
     xsize=1200,
     title=None,
     features=("coastlines", "land"),
     **kwargs,
 ):
-    nside = 2**resolution
+    nside = grid_info.nside
+    nest = grid_info.nest
 
     ysize = xsize // 2
     full_lat = np.linspace(-90, 90, ysize)
     full_lon = np.linspace(-180, 180, xsize)
     grid_lat, grid_lon = np.meshgrid(full_lat, full_lon)
-    pix = hp.ang2pix(nside, grid_lon, grid_lat, lonlat=True, nest=True)
+    pix = hp.ang2pix(nside, grid_lon, grid_lat, lonlat=True, nest=nest)
 
     full_map = np.full((12 * nside**2,), fill_value=np.nan)
     full_map[cell_ids] = data
@@ -48,20 +49,27 @@ def plot_healpix(
     )
 
 
-def xr_plot_healpix(arr, *, ax, cmap="viridis", xsize=1200, title=None, **kwargs):
+def xr_plot_healpix(
+    arr,
+    *,
+    ax,
+    cmap="viridis",
+    xsize=1200,
+    title=None,
+    features=("coastlines", "land"),
+    **kwargs,
+):
     cell_ids_ = arr["cell_ids"]
     cell_ids = cell_ids_.data
-
-    params = cell_ids_.attrs
-    resolution = params["resolution"]
 
     return plot_healpix(
         arr.data,
         cell_ids,
-        resolution=resolution,
+        grid_info=cell_ids_.dggs.grid_info,
         ax=ax,
         cmap=cmap,
         xsize=xsize,
         title=title,
+        features=features,
         **kwargs,
     )
