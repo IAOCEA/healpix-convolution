@@ -1,8 +1,10 @@
-:orphan:
+---
+orphan: true
+---
 
-Hidden API
-==========
+# Hidden API
 
+```{eval-rst}
 .. currentmodule:: healpix_convolution
 
 .. autosummary::
@@ -14,7 +16,9 @@ Hidden API
    Padding.cell_ids
    Padding.insert_indices
    Padding.grid_info
+```
 
+```{eval-rst}
 .. currentmodule:: healpix_convolution.xarray
 
 .. autosummary::
@@ -24,3 +28,4 @@ Hidden API
    Padding.apply
 
    Padding.padding
+```
