@@ -11,12 +11,19 @@ __pycache__/
 /dist
 /*.egg-info
 
-# tools
+# jupyter
 .ipynb_checkpoints/
+.virtual_documents/
+
+# tools
 .hypothesis/
 .pytest_cache
 .coverage
 .coverage.*
 .cache
-/docs/_build/
 .prettier_cache
+
+# sphinx
+/docs/_build/
+/docs/generated/
+/docs/warnings.log

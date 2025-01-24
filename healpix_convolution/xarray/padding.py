@@ -9,6 +9,14 @@ from healpix_convolution.xarray import utils
 
 @dataclass
 class Padding:
+    """Cache of the padding configuration
+
+    Parameters
+    ----------
+    padding : healpix_convolution.Padding
+        The padding cache
+    """
+
     padding: padding.Padding
 
     def _apply_one(self, arr):
@@ -25,6 +33,13 @@ class Padding:
         )
 
     def apply(self, obj):
+        """Apply the cached padding to the data
+
+        Parameters
+        ----------
+        obj : xarray.Dataset or xarray.DataArray
+            The object to pad.
+        """
         return utils.call_on_dataset(self._apply, obj).pipe(xdggs.decode)
 
 
@@ -62,7 +77,7 @@ def pad(
 
     Returns
     -------
-    padded : Padding
+    padded : healpix_convolution.xarray.Padding
         The padding object. Can be used to apply the same padding operation for multiple
         objects with the same geometry.
     """
