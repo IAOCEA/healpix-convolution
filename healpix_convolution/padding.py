@@ -239,11 +239,7 @@ def pad(
     #   * an array of indices that map existing values to the new cell ids
     # To be able to reuse this, we need a set of dataclasses that can encapsulate that,
     # plus a method to apply the padding to data.
-    neighbours = search_neighbours(
-        cell_ids,
-        grid_info=grid_info,
-        ring=ring,
-    )
+    neighbours = search_neighbours(cell_ids, grid_info=grid_info, ring=ring)
 
     modes = {
         "constant": partial(constant_mode, constant_value=constant_value),
