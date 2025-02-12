@@ -32,8 +32,7 @@ We also need a kernel:
 ```{jupyter-execute}
 _, kernel = hc.kernels.gaussian_kernel(
     cell_ids,
-    resolution=grid_info.level,
-    indexing_scheme=grid_info.indexing_scheme,
+    grid_info=grid_info,
     sigma=0.5,
     kernel_size=5,
     weights_threshold=1e-8,
@@ -88,8 +87,7 @@ and we can immediately define the kernel:
 kernel_size = 5
 _, kernel = hc.kernels.gaussian_kernel(
     cell_ids,
-    resolution=grid_info.level,
-    indexing_scheme=grid_info.indexing_scheme,
+    grid_info=grid_info,
     sigma=0.5,
     kernel_size=kernel_size,
     weights_threshold=1e-10,

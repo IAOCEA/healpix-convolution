@@ -179,21 +179,21 @@ def minimum_dtype(value):
         return "int64"
 
 
-def neighbours(cell_ids, *, resolution, indexing_scheme, ring=1):
+def neighbours(cell_ids, *, grid_info, ring=1):
     """determine the neighbours within the nth ring around the center pixel
 
     Parameters
     ----------
-    resolution : int
-        The healpix resolution. Has to be within [0, 29].
     cell_ids : array-like
         The cell ids of which to find the neighbours.
+    grid_info : xdggs.HealpixInfo
+        The grid parameters.
     ring : int, default: 1
         The number of the ring. `ring=0` returns just the cell id, `ring=1` returns the 8
         (or 7) immediate neighbours, `ring=2` returns the 8 (or 7) immediate neighbours
         plus their immediate neighbours (a total of 24 cells), and so on.
     """
-    nside = 2**resolution
+    nside = grid_info.nside
     if ring < 0:
         raise ValueError(f"ring must be a positive integer or 0, got {ring}")
     if ring > nside:
@@ -210,12 +210,15 @@ def neighbours(cell_ids, *, resolution, indexing_scheme, ring=1):
             cell_ids,
             offsets=offsets,
             nside=nside,
-            indexing_scheme=indexing_scheme,
+            indexing_scheme=grid_info.indexing_scheme,
             new_axis=1,
             chunks=cell_ids.chunks + (n_neighbours,),
             dtype=cell_ids.dtype,
         )
     else:
         return _neighbours(
-            cell_ids, offsets=offsets, nside=nside, indexing_scheme=indexing_scheme
+            cell_ids,
+            offsets=offsets,
+            nside=nside,
+            indexing_scheme=grid_info.indexing_scheme,
         )

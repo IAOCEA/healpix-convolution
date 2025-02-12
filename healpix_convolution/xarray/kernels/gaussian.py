@@ -46,8 +46,7 @@ def gaussian_kernel(
 
     padded_cell_ids, matrix = gaussian.gaussian_kernel(
         cell_ids.data,
-        resolution=grid_info.level,
-        indexing_scheme=grid_info.indexing_scheme,
+        grid_info=grid_info,
         sigma=sigma,
         truncate=truncate,
         kernel_size=kernel_size,
