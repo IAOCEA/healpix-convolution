@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+import xdggs
 
 import healpix_convolution.distances as hds
 
@@ -22,6 +23,7 @@ def test_angle_between_vectors():
     ),
 )
 def test_angular_distances_numpy(neighbours, expected):
-    actual = hds.angular_distances(neighbours, resolution=2, indexing_scheme="nested")
+    grid_info = xdggs.HealpixInfo(level=2, indexing_scheme="nested")
+    actual = hds.angular_distances(neighbours, grid_info=grid_info)
 
     np.testing.assert_allclose(actual, expected)
