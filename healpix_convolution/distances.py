@@ -37,17 +37,15 @@ def _distances(a, b, axis, nside, nest):
     return angle_between_vectors(vec_a, vec_b, axis=axis)
 
 
-def angular_distances(neighbours, *, resolution, indexing_scheme="nested", axis=None):
+def angular_distances(neighbours, *, grid_info, axis=None):
     """compute the angular great-circle distances between neighbours
 
     Parameters
     ----------
     neighbours : array-like
         The input cell ids.
-    resolution : int
-        The resolution of healpix pixelization.
-    indexing_scheme : {"nested", "ring"}, default: "nested"
-        The indexing scheme of the cell ids.
+    grid_info : xdggs.HealpixInfo
+        The grid parameters.
     axis : int, optional
         The axis used for the neighbours. If not given, assume the last dimension.
 
@@ -60,8 +58,8 @@ def angular_distances(neighbours, *, resolution, indexing_scheme="nested", axis=
     if axis is None:
         axis = -1
 
-    nest = indexing_scheme == "nested"
-    nside = 2**resolution
+    nest = grid_info.nest
+    nside = grid_info.nside
 
     if isinstance(neighbours, dask_array_type):
         return da.map_blocks(

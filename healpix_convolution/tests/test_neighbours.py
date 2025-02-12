@@ -3,6 +3,7 @@ import hypothesis.strategies as st
 import numpy as np
 import pytest
 from hypothesis import given
+from xdggs import HealpixInfo
 
 from healpix_convolution.neighbours import generate_offsets, neighbours
 
@@ -37,14 +38,14 @@ def test_neighbours_ring1_manual(resolution, indexing_scheme, dask):
     else:
         xp = np
 
+    grid_info = HealpixInfo(level=resolution, indexing_scheme=indexing_scheme)
+
     cell_ids = xp.arange(12 * 4**resolution)
 
-    actual = neighbours(
-        cell_ids, resolution=resolution, indexing_scheme=indexing_scheme, ring=1
-    )
+    actual = neighbours(cell_ids, grid_info=grid_info, ring=1)
 
-    nside = 2**resolution
-    nest = indexing_scheme == "nested"
+    nside = grid_info.nside
+    nest = grid_info.nest
     expected = hp.get_all_neighbours(nside, np.asarray(cell_ids), nest=nest).T
 
     actual_ = np.asarray(actual[:, 1:])
@@ -56,11 +57,10 @@ def test_neighbours_ring1_manual(resolution, indexing_scheme, dask):
 def test_neighbours_ring1(resolution, indexing_scheme):
     cell_ids = np.arange(12 * 4**resolution)
 
-    actual = neighbours(
-        cell_ids, resolution=resolution, indexing_scheme=indexing_scheme, ring=1
-    )
-    nside = 2**resolution
-    nest = indexing_scheme == "nested"
+    grid_info = HealpixInfo(level=resolution, indexing_scheme=indexing_scheme)
+    actual = neighbours(cell_ids, grid_info=grid_info, ring=1)
+    nside = grid_info.nside
+    nest = grid_info.nest
     expected = hp.get_all_neighbours(nside, cell_ids, nest=nest).T
 
     np.testing.assert_equal(actual[:, 1:], expected)

@@ -110,22 +110,19 @@ def reconstruct_sigma(
     cell_ids,
     kernel,
     *,
-    resolution,
-    indexing_scheme,
+    grid_info,
     sigma,
     truncate=4.0,
     kernel_size=None,
 ):
     from healpix_convolution import angular_distances, neighbours
 
-    ring = np_kernels.gaussian.compute_ring(resolution, sigma, truncate, kernel_size)
+    ring = np_kernels.gaussian.compute_ring(
+        grid_info.level, sigma, truncate, kernel_size
+    )
 
-    nb = neighbours(
-        cell_ids, resolution=resolution, indexing_scheme=indexing_scheme, ring=ring
-    )
-    distances = angular_distances(
-        nb, resolution=resolution, indexing_scheme=indexing_scheme
-    )
+    nb = neighbours(cell_ids, grid_info=grid_info, ring=ring)
+    distances = angular_distances(nb, grid_info=grid_info)
 
     _, distances_ = np_kernels.common.create_sparse(cell_ids, nb, distances)
 
@@ -144,20 +141,20 @@ class TestGaussian:
         (
             (
                 np.array([1, 2]),
-                {"resolution": 1, "indexing_scheme": "nested", "sigma": 0.1},
+                {"level": 1, "indexing_scheme": "nested", "sigma": 0.1},
             ),
             (
                 np.array([1, 2]),
-                {"resolution": 1, "indexing_scheme": "ring", "sigma": 0.1},
+                {"level": 1, "indexing_scheme": "ring", "sigma": 0.1},
             ),
             (
                 np.array([0, 2]),
-                {"resolution": 1, "indexing_scheme": "nested", "sigma": 0.2},
+                {"level": 1, "indexing_scheme": "nested", "sigma": 0.2},
             ),
             (
                 np.array([1, 2]),
                 {
-                    "resolution": 1,
+                    "level": 1,
                     "indexing_scheme": "nested",
                     "sigma": 0.1,
                     "kernel_size": 5,
@@ -166,7 +163,7 @@ class TestGaussian:
             (
                 np.array([3, 0]),
                 {
-                    "resolution": 1,
+                    "level": 1,
                     "indexing_scheme": "ring",
                     "sigma": 0.1,
                     "kernel_size": 3,
@@ -175,7 +172,10 @@ class TestGaussian:
         ),
     )
     def test_gaussian_kernel(self, cell_ids, kwargs):
-        _, actual = np_kernels.gaussian_kernel(cell_ids, **kwargs)
+        grid_info = xdggs.HealpixInfo(
+            level=kwargs.pop("level"), indexing_scheme=kwargs.pop("indexing_scheme")
+        )
+        _, actual = np_kernels.gaussian_kernel(cell_ids, grid_info=grid_info, **kwargs)
 
         kernel_sum = np.sum(actual, axis=1)
 
@@ -183,7 +183,9 @@ class TestGaussian:
         np.testing.assert_allclose(kernel_sum.todense(), 1)
 
         # try determining the sigma from the values for better tests
-        reconstructed_sigma = reconstruct_sigma(cell_ids, actual, **kwargs)
+        reconstructed_sigma = reconstruct_sigma(
+            cell_ids, actual, grid_info=grid_info, **kwargs
+        )
         np.testing.assert_allclose(reconstructed_sigma, kwargs["sigma"])
 
     @pytest.mark.parametrize(
@@ -192,7 +194,7 @@ class TestGaussian:
             (
                 np.array([[0, 1], [2, 3]]),
                 {
-                    "resolution": 1,
+                    "level": 1,
                     "indexing_scheme": "nested",
                     "sigma": 0.1,
                     "kernel_size": 3,
@@ -203,7 +205,7 @@ class TestGaussian:
             (
                 np.array([0, 1]),
                 {
-                    "resolution": 1,
+                    "level": 1,
                     "indexing_scheme": "nested",
                     "sigma": 0.1,
                     "kernel_size": 7,
@@ -214,8 +216,11 @@ class TestGaussian:
         ),
     )
     def test_gaussian_kernel_errors(self, cell_ids, kwargs, error, pattern):
+        grid_info = xdggs.HealpixInfo(
+            level=kwargs.pop("level"), indexing_scheme=kwargs.pop("indexing_scheme")
+        )
         with pytest.raises(error, match=pattern):
-            np_kernels.gaussian_kernel(cell_ids, **kwargs)
+            np_kernels.gaussian_kernel(cell_ids, grid_info=grid_info, **kwargs)
 
 
 class TestXarray:
@@ -231,7 +236,7 @@ class TestXarray:
                             np.array([1, 2]),
                             {
                                 "grid_name": "healpix",
-                                "resolution": 1,
+                                "level": 1,
                                 "indexing_scheme": "nested",
                             },
                         )
@@ -249,7 +254,7 @@ class TestXarray:
                             np.array([1, 2]),
                             {
                                 "grid_name": "healpix",
-                                "resolution": 1,
+                                "level": 1,
                                 "indexing_scheme": "ring",
                             },
                         )
@@ -267,7 +272,7 @@ class TestXarray:
                             np.array([0, 2]),
                             {
                                 "grid_name": "healpix",
-                                "resolution": 1,
+                                "level": 1,
                                 "indexing_scheme": "nested",
                             },
                         )
@@ -285,7 +290,7 @@ class TestXarray:
                             np.array([1, 2]),
                             {
                                 "grid_name": "healpix",
-                                "resolution": 1,
+                                "level": 1,
                                 "indexing_scheme": "nested",
                             },
                         )
@@ -303,7 +308,7 @@ class TestXarray:
                             np.array([0, 3]),
                             {
                                 "grid_name": "healpix",
-                                "resolution": 1,
+                                "level": 1,
                                 "indexing_scheme": "ring",
                             },
                         )
@@ -321,7 +326,7 @@ class TestXarray:
                             np.arange(12 * 4**2, dtype="int64"),
                             {
                                 "grid_name": "healpix",
-                                "resolution": 2,
+                                "level": 2,
                                 "indexing_scheme": "ring",
                             },
                         )
@@ -345,8 +350,7 @@ class TestXarray:
         reconstructed_sigma = reconstruct_sigma(
             obj.cell_ids.data,
             actual.data,
-            resolution=grid_info.level,
-            indexing_scheme=grid_info.indexing_scheme,
+            grid_info=grid_info,
             **kwargs,
         )
         np.testing.assert_allclose(reconstructed_sigma, kwargs["sigma"])
