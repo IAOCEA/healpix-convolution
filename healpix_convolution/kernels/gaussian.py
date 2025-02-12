@@ -1,5 +1,6 @@
 import healpy as hp
 import numpy as np
+import xdggs
 
 from healpix_convolution.distances import angular_distances
 from healpix_convolution.kernels.common import create_sparse
@@ -31,8 +32,7 @@ def gaussian_function(distances, sigma, *, mask=None):
 def gaussian_kernel(
     cell_ids,
     *,
-    resolution: int,
-    indexing_scheme: str,
+    grid_info: xdggs.HealpixInfo,
     sigma: float,
     truncate: float = 4.0,
     kernel_size: int | None = None,
@@ -44,10 +44,8 @@ def gaussian_kernel(
     ----------
     cell_ids : array-like
         The cell ids.
-    resolution : int
-        The healpix resolution
-    indexing_scheme : {"nested", "ring"}
-        The healpix indexing scheme
+    grid_info : xdggs.HealpixInfo
+        The grid parameters.
     sigma : float
         The standard deviation of the gaussian function in radians.
     truncate : float, default: 4.0
@@ -73,12 +71,10 @@ def gaussian_kernel(
 
     cell_ids = np.reshape(cell_ids, (-1,))
 
-    ring = compute_ring(resolution, sigma, truncate, kernel_size)
+    ring = compute_ring(grid_info.level, sigma, truncate, kernel_size)
 
-    nb = neighbours(
-        cell_ids, resolution=resolution, indexing_scheme=indexing_scheme, ring=ring
-    )
-    d = angular_distances(nb, resolution=resolution, indexing_scheme=indexing_scheme)
+    nb = neighbours(cell_ids, grid_info=grid_info, ring=ring)
+    d = angular_distances(nb, grid_info=grid_info)
     weights = gaussian_function(d, sigma, mask=nb == -1)
 
     return create_sparse(cell_ids, nb, weights, weights_threshold)
