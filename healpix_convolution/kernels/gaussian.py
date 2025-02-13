@@ -1,4 +1,3 @@
-import healpy as hp
 import numpy as np
 import xdggs
 
@@ -7,11 +6,15 @@ from healpix_convolution.kernels.common import create_sparse
 from healpix_convolution.neighbours import neighbours
 
 
+def healpix_resolution(level):
+    return 2 * np.pi / np.sqrt(12 * 4**level)
+
+
 def compute_ring(resolution, sigma, truncate, kernel_size):
     if kernel_size is not None:
         ring = int(kernel_size / 2)
     else:
-        cell_distance = hp.nside2resol(2**resolution, arcmin=False)
+        cell_distance = healpix_resolution(resolution)
         ring = int((truncate * sigma / cell_distance) // 2)
 
     return ring if ring >= 1 else 1
