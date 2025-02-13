@@ -12,7 +12,7 @@ def healpix_resolution(level):
 
 def compute_ring(resolution, sigma, truncate, kernel_size):
     if kernel_size is not None:
-        ring = int(kernel_size / 2)
+        ring = int(kernel_size // 2)
     else:
         cell_distance = healpix_resolution(resolution)
         ring = int((truncate * sigma / cell_distance) // 2)
