@@ -37,7 +37,6 @@ def angle_between_vectors(a, b, axis):
 def _distances(a, b, axis, grid_info):
     vec_a = cell_ids2vectors(a, grid_info)
 
-    # TODO: contains `-1`, which `pix2vec` doesn't like
     mask = b != -1
     vec_b_ = cell_ids2vectors(np.where(mask, b, 0), grid_info)
     vec_b = np.where(mask[..., None], vec_b_, np.nan)
