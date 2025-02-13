@@ -7,10 +7,9 @@ dependencies:
   - pytest-reportlog
   - pytest-cov
   - hypothesis
-  - numba
   - numpy
   - dask
-  - healpy>=1.17
+  - cdshealpix
   - geopandas
   - pandas
   - sparse
@@ -21,4 +20,5 @@ dependencies:
   - matplotlib
   - pip
   - pip:
+      - healpix-geo
       - git+https://github.com/xarray-contrib/xdggs
