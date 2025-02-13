@@ -1,4 +1,3 @@
-import healpy as hp
 import numpy as np
 
 try:
@@ -10,9 +9,18 @@ except ImportError:  # pragma: no cover
     dask_array_type = ()
 
 
-def cell_ids2vectors(cell_ids, nside, nest):
-    flattened = cell_ids.flatten()
-    vecs = np.stack(hp.pix2vec(nside, flattened, nest=nest), axis=-1)
+def spherical_to_euclidean(lon, lat):
+    x = np.cos(lon) * np.cos(lat)
+    y = np.sin(lon) * np.cos(lat)
+    z = np.sin(lat)
+
+    return x, y, z
+
+
+def cell_ids2vectors(cell_ids, grid_info):
+    lon, lat = grid_info.cell_ids2geographic(cell_ids.flatten())
+    vecs = np.stack(spherical_to_euclidean(np.deg2rad(lon), np.deg2rad(lat)), axis=-1)
+
     return np.reshape(vecs, cell_ids.shape + (3,))
 
 
@@ -26,12 +34,12 @@ def angle_between_vectors(a, b, axis):
     return np.arccos(argument)
 
 
-def _distances(a, b, axis, nside, nest):
-    vec_a = cell_ids2vectors(a, nside, nest)
+def _distances(a, b, axis, grid_info):
+    vec_a = cell_ids2vectors(a, grid_info)
 
     # TODO: contains `-1`, which `pix2vec` doesn't like
     mask = b != -1
-    vec_b_ = cell_ids2vectors(np.where(mask, b, 0), nside, nest)
+    vec_b_ = cell_ids2vectors(np.where(mask, b, 0), grid_info)
     vec_b = np.where(mask[..., None], vec_b_, np.nan)
 
     return angle_between_vectors(vec_a, vec_b, axis=axis)
@@ -58,20 +66,14 @@ def angular_distances(neighbours, *, grid_info, axis=None):
     if axis is None:
         axis = -1
 
-    nest = grid_info.nest
-    nside = grid_info.nside
-
     if isinstance(neighbours, dask_array_type):
         return da.map_blocks(
             _distances,
             neighbours[:, :1],
             neighbours,
             axis=axis,
-            nside=nside,
-            nest=nest,
+            grid_info=grid_info,
             chunks=neighbours.chunks,
         )
     else:
-        return _distances(
-            neighbours[:, :1], neighbours, axis=axis, nside=nside, nest=nest
-        )
+        return _distances(neighbours[:, :1], neighbours, axis=axis, grid_info=grid_info)
