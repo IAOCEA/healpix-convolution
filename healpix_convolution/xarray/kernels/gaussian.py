@@ -1,7 +1,8 @@
 import xarray as xr
 import xdggs  # noqa: F401
 
-from healpix_convolution.kernels import compute_ring, gaussian
+from healpix_convolution.kernels import gaussian
+from healpix_convolution.kernels.gaussian import compute_ring
 
 
 def gaussian_kernel(
