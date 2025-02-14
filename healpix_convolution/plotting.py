@@ -1,6 +1,5 @@
 import cartopy.crs as ccrs
 import cartopy.feature
-import healpy as hp
 import numpy as np
 
 
@@ -17,13 +16,12 @@ def plot_healpix(
     **kwargs,
 ):
     nside = grid_info.nside
-    nest = grid_info.nest
 
     ysize = xsize // 2
     full_lat = np.linspace(-90, 90, ysize)
     full_lon = np.linspace(-180, 180, xsize)
     grid_lat, grid_lon = np.meshgrid(full_lat, full_lon)
-    pix = hp.ang2pix(nside, grid_lon, grid_lat, lonlat=True, nest=nest)
+    pix = grid_info.geographic2cell_ids(lon=grid_lon, lat=grid_lat)
 
     full_map = np.full((12 * nside**2,), fill_value=np.nan)
     full_map[cell_ids] = data

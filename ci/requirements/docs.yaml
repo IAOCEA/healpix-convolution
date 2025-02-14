@@ -9,10 +9,9 @@ dependencies:
   - sphinx-remove-toctrees
   - jupyter-sphinx
   - ipython
-  - numba
   - numpy
   - dask
-  - healpy>=1.17
+  - cdshealpix
   - geopandas
   - pandas
   - sparse>=0.15
@@ -26,4 +25,5 @@ dependencies:
   - cartopy_offlinedata
   - pip
   - pip:
+      - healpix-geo
       - -e ../..

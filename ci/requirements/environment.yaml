@@ -7,18 +7,14 @@ dependencies:
   - pytest-reportlog
   - pytest-cov
   - hypothesis
-  - numba
   - numpy
   - dask
-  - healpy>=1.17
-  - geopandas
-  - pandas
   - sparse
   - xarray
-  - folium
-  - shapely
   - opt_einsum
-  - matplotlib
+  - matplotlib-base
   - pip
   - pip:
-      - git+https://github.com/xarray-contrib/xdggs
+      - xdggs
+      - cdshealpix
+      - healpix-geo

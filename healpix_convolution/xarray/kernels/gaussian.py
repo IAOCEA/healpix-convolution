@@ -2,16 +2,7 @@ import xarray as xr
 import xdggs  # noqa: F401
 
 from healpix_convolution.kernels import gaussian
-
-
-def compute_ring(grid_info, sigma, kernel_size, truncate):
-    if kernel_size is not None:
-        return int(kernel_size // 2)
-    else:
-        import healpy as hp
-
-        cell_distance = hp.nside2resol(2**grid_info.level, arcmin=False)
-        return int((truncate * sigma / cell_distance) // 2)
+from healpix_convolution.kernels.gaussian import compute_ring
 
 
 def gaussian_kernel(
@@ -63,7 +54,7 @@ def gaussian_kernel(
         "method": "continuous",
         "sigma": sigma,
         "ring": compute_ring(
-            kernel_size=kernel_size, grid_info=grid_info, truncate=truncate, sigma=sigma
+            grid_info.level, kernel_size=kernel_size, truncate=truncate, sigma=sigma
         ),
     } | size_param
 
