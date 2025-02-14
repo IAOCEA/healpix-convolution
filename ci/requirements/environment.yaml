@@ -9,7 +9,6 @@ dependencies:
   - hypothesis
   - numpy
   - dask
-  - cdshealpix
   - geopandas
   - pandas
   - sparse
@@ -18,7 +17,8 @@ dependencies:
   - shapely
   - opt_einsum
   - matplotlib
-  - xdggs
   - pip
   - pip:
+      - xdggs
+      - cdshealpix
       - healpix-geo
