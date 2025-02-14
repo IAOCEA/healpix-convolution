@@ -27,10 +27,10 @@ def neighbours_ring(ipix, depth):
     return np.where(mask, as_ring.astype("int64"), -1)
 
 
-@pytest.mark.parametrize("resolution", [1, 2, 4, 6])
+@pytest.mark.parametrize("level", [1, 2, 4, 6])
 @pytest.mark.parametrize("indexing_scheme", ["ring", "nested"])
 @pytest.mark.parametrize("dask", [pytest.param(True, marks=requires_dask), False])
-def test_neighbours_ring1_manual(resolution, indexing_scheme, dask):
+def test_neighbours_ring1_manual(level, indexing_scheme, dask):
     if dask:
         xp = da
     else:
@@ -41,9 +41,9 @@ def test_neighbours_ring1_manual(resolution, indexing_scheme, dask):
     elif indexing_scheme == "ring":
         reference_neighbours = neighbours_ring
 
-    grid_info = HealpixInfo(level=resolution, indexing_scheme=indexing_scheme)
+    grid_info = HealpixInfo(level=level, indexing_scheme=indexing_scheme)
 
-    cell_ids = xp.arange(12 * 4**resolution)
+    cell_ids = xp.arange(12 * 4**level)
 
     actual = neighbours(cell_ids, grid_info=grid_info, ring=1)
 
@@ -55,15 +55,15 @@ def test_neighbours_ring1_manual(resolution, indexing_scheme, dask):
 
 
 @given(st.integers(min_value=1, max_value=7), st.sampled_from(["nested", "ring"]))
-def test_neighbours_ring1(resolution, indexing_scheme):
+def test_neighbours_ring1(level, indexing_scheme):
     if indexing_scheme == "nested":
         reference_neighbours = cdshealpix.nested.neighbours
     else:
         reference_neighbours = neighbours_ring
 
-    cell_ids = np.arange(12 * 4**resolution)
+    cell_ids = np.arange(12 * 4**level)
 
-    grid_info = HealpixInfo(level=resolution, indexing_scheme=indexing_scheme)
+    grid_info = HealpixInfo(level=level, indexing_scheme=indexing_scheme)
     actual = neighbours(cell_ids, grid_info=grid_info, ring=1)
 
     expected = reference_neighbours(cell_ids, depth=grid_info.level)
