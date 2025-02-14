@@ -12,7 +12,7 @@ dependencies:
   - sparse
   - xarray
   - opt_einsum
-  - matplotlib
+  - matplotlib-base
   - pip
   - pip:
       - xdggs
