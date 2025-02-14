@@ -33,12 +33,14 @@ def neighbours(cell_ids, *, grid_info, ring=1):
             "rings containing more than the neighbouring base pixels are not supported"
         )
 
-    if not grid_info.nest:
-        raise ValueError(
-            "Searching neighbours is not supported on the 'ring' scheme for now"
-        )
+    if grid_info.indexing_scheme == "nested":
+        neighbours_disk = healpix_geo.nested.neighbours_disk
+    elif grid_info.indexing_scheme == "ring":
+        neighbours_disk = healpix_geo.ring.neighbours_disk
+    else:
+        raise ValueError(f"unsupported indexing scheme: '{grid_info.indexing_scheme}'")
 
-    f = partial(healpix_geo.nested.neighbours_disk, depth=grid_info.level, ring=ring)
+    f = partial(neighbours_disk, depth=grid_info.level, ring=ring)
     if isinstance(cell_ids, dask_array_type):
         n_neighbours = (2 * ring + 1) ** 2
         return da.map_blocks(

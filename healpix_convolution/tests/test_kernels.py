@@ -143,10 +143,9 @@ class TestGaussian:
                 np.array([1, 2]),
                 {"level": 1, "indexing_scheme": "nested", "sigma": 0.1},
             ),
-            pytest.param(
+            (
                 np.array([1, 2]),
                 {"level": 1, "indexing_scheme": "ring", "sigma": 0.1},
-                marks=pytest.mark.skip(reason="ring scheme is not implemented yet"),
             ),
             (
                 np.array([0, 2]),
@@ -161,7 +160,7 @@ class TestGaussian:
                     "kernel_size": 5,
                 },
             ),
-            pytest.param(
+            (
                 np.array([3, 0]),
                 {
                     "level": 1,
@@ -169,7 +168,6 @@ class TestGaussian:
                     "sigma": 0.1,
                     "kernel_size": 3,
                 },
-                marks=pytest.mark.skip(reason="the ring scheme is not implemented yet"),
             ),
         ),
     )
@@ -247,7 +245,7 @@ class TestXarray:
                 ),
                 {"sigma": 0.1},
             ),
-            pytest.param(
+            (
                 xr.DataArray(
                     [1, 2],
                     coords={
@@ -264,7 +262,6 @@ class TestXarray:
                     dims="cells",
                 ),
                 {"sigma": 0.1},
-                marks=pytest.mark.skip(reason="the ring scheme is not implemented yet"),
             ),
             (
                 xr.DataArray(
@@ -302,7 +299,7 @@ class TestXarray:
                 ),
                 {"sigma": 0.1, "kernel_size": 5},
             ),
-            pytest.param(
+            (
                 xr.DataArray(
                     [0, 3],
                     coords={
@@ -319,9 +316,8 @@ class TestXarray:
                     dims="cells",
                 ),
                 {"sigma": 0.1, "kernel_size": 3},
-                marks=pytest.mark.skip(reason="the ring scheme is not implemented yet"),
             ),
-            pytest.param(
+            (
                 xr.DataArray(
                     np.arange(12 * 4**2, dtype="int64"),
                     coords={
@@ -338,7 +334,6 @@ class TestXarray:
                     dims="cells",
                 ),
                 {"sigma": 0.1, "kernel_size": 3},
-                marks=pytest.mark.skip(reason="the ring scheme is not implemented yet"),
             ),
         ),
     )
