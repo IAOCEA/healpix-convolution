@@ -12,6 +12,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Topic :: Scientific/Engineering :: GIS",
 ]
+description = "space-domain convolution on the healpix grid"
 readme = "README.md"
 dependencies = [
   "numpy",
