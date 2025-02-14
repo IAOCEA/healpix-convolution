@@ -95,7 +95,7 @@ remove_from_toctrees = ["generated/*"]
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
-    "sphinx": ("https://www.sphinx-doc.org/en/stable/", None),
+    "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
     "numpy": ("https://numpy.org/doc/stable", None),
     "xarray": ("https://docs.xarray.dev/en/latest", None),
     "sparse": ("https://sparse.pydata.org/en/latest", None),
