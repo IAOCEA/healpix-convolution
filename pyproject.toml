@@ -22,6 +22,10 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+[project.urls]
+Documentation = "https://healpix-convolution.readthedocs.io"
+Repository = "https://github.com/iaocea/healpix-convolution"
+
 [project.optional-dependencies]
 xarray = ["xarray"]
 lazy = ["dask"]
