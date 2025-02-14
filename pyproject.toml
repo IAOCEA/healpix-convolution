@@ -2,6 +2,16 @@
 name = "healpix-convolution"
 requires-python = ">= 3.11"
 license = {text = "Apache-2.0"}
+classifiers = [
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: GIS",
+]
 dependencies = [
   "numpy",
   "cdshealpix",
@@ -11,6 +21,10 @@ dependencies = [
   "opt_einsum",
 ]
 dynamic = ["version"]
+
+[project.urls]
+Documentation = "https://healpix-convolution.readthedocs.io"
+Repository = "https://github.com/iaocea/healpix-convolution"
 
 [project.optional-dependencies]
 xarray = ["xarray"]
