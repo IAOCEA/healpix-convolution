@@ -18,7 +18,7 @@ dependencies:
   - shapely
   - opt_einsum
   - matplotlib
+  - xdggs
   - pip
   - pip:
       - healpix-geo
-      - git+https://github.com/xarray-contrib/xdggs
