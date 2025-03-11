@@ -7,7 +7,7 @@ from healpix_convolution.neighbours import neighbours
 
 
 def healpix_resolution(level):
-    return 2 * np.pi / np.sqrt(12 * 4**level)
+    return np.sqrt(4 * np.pi / (12 * 4**level))
 
 
 def compute_ring(level, sigma, truncate, kernel_size):
