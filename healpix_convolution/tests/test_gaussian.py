@@ -5,7 +5,7 @@ from healpix_convolution.kernels.gaussian import compute_ring, healpix_resolutio
 
 
 @pytest.mark.parametrize(
-    "level, expected",
+    ["level", "expected"],
     [
         # level = 0 --> sqrt(4*pi/(12)) --> sqrt(pi/3)
         (0, np.sqrt(np.pi / 3)),
@@ -14,12 +14,12 @@ from healpix_convolution.kernels.gaussian import compute_ring, healpix_resolutio
     ],
 )
 def test_healpix_resolution(level, expected):
-    result = healpix_resolution(level)
-    np.testing.assert_allclose(result, expected)
+    actual = healpix_resolution(level)
+    np.testing.assert_allclose(actual, expected)
 
 
 @pytest.mark.parametrize(
-    "level, sigma, truncate, kernel_size, expected",
+    ["level", "sigma", "truncate", "kernel_size", "expected"],
     [
         # kernel_size = 5 --> ring = 5 // 2 = 2.
         (2, 1.0, 1.0, 5, 2),
@@ -36,5 +36,5 @@ def test_healpix_resolution(level, expected):
     ],
 )
 def test_compute_ring(level, sigma, truncate, kernel_size, expected):
-    result = compute_ring(level, sigma, truncate, kernel_size)
-    assert result == expected
+    actual = compute_ring(level, sigma, truncate, kernel_size)
+    assert actual == expected
