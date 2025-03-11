@@ -1,5 +1,6 @@
 import numpy as np
 import xdggs
+
 from healpix_convolution.distances import angular_distances
 from healpix_convolution.kernels.common import create_sparse
 from healpix_convolution.neighbours import neighbours
