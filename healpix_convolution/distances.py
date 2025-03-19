@@ -58,8 +58,12 @@ def _coord(a, b, axis, grid_info):
     mask = b != -1
     vec_b_ = cell_ids2vectors(np.where(mask, b, 0), grid_info)
     vec_b = np.where(mask[..., None], vec_b_, np.nan)
-    print(vec_a.shape,vec_b.shape)
-    return angle_between_vectors(vec_a, vec_b, axis=axis)
+    d=angle_between_vectors(vec_a, vec_b, axis=axis)
+    y=vec_b[:,:,1]-vec_a[:,:,1]
+    z=vec_b[:,:,2]-vec_a[:,:,2]
+    x=((y*np.sqrt(1-vec_a[:,:,1]**2)+z*vec_a[:,:,1])*(vec_a[:,:,2]<0))*2**grid_info.level + \
+        (-(y*np.sqrt(1-vec_a[:,:,1]**2)-z*(vec_a[:,:,1]))*(vec_a[:,:,2]>=0))*2**grid_info.level
+    return x,d
 
 
 def angular_distances(neighbours, *, grid_info, axis=None):
@@ -126,4 +130,4 @@ def coord_distances(neighbours, *, grid_info, axis=None):
             chunks=neighbours.chunks,
         )
     else:
-        return _distances(neighbours[:, :1], neighbours, axis=axis, grid_info=grid_info)
+        return _coord(neighbours[:, :1], neighbours, axis=axis, grid_info=grid_info)

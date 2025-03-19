@@ -7,7 +7,6 @@ from healpix_convolution.kernels.wavelet import compute_ring
 
 def wavelet_kernel(
     cell_ids,
-    sigma: float,
     truncate: float = 4.0,
     kernel_size: int | None = None,
     weights_threshold: float | None = None,
@@ -38,7 +37,6 @@ def wavelet_kernel(
     padded_cell_ids, matrix = wavelet.wavelet_kernel(
         cell_ids.data,
         grid_info=grid_info,
-        sigma=sigma,
         truncate=truncate,
         kernel_size=kernel_size,
         weights_threshold=weights_threshold,
@@ -52,9 +50,9 @@ def wavelet_kernel(
     attrs = {
         "kernel_type": "gaussian",
         "method": "continuous",
-        "sigma": sigma,
+        "sigma": 1/2**grid_info.level,
         "ring": compute_ring(
-            grid_info.level, kernel_size=kernel_size, truncate=truncate, sigma=sigma
+            grid_info.level, kernel_size=kernel_size, truncate=truncate, sigma=1/2**grid_info.level
         ),
     } | size_param
 

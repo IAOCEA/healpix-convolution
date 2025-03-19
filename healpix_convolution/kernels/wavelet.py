@@ -1,7 +1,7 @@
 import numpy as np
 import xdggs
 
-from healpix_convolution.distances import angular_distances
+from healpix_convolution.distances import coord_distances
 from healpix_convolution.kernels.common import create_sparse
 from healpix_convolution.neighbours import neighbours
 
@@ -20,23 +20,23 @@ def compute_ring(level, sigma, truncate, kernel_size):
     return ring if ring >= 1 else 1
 
 
-def wavelet_function(distances, sigma, *, mask=None):
+def wavelet_function(x,distances, sigma, *, mask=None):
+    
     sigma2 = sigma * sigma
-    phi_x = np.exp(-0.5 / sigma2 * distances**2)
+    phi_x = (np.cos(2*x)+1J*np.sin(2*x))*np.exp(-0.7*distances**2 /sigma2)
 
     if mask is not None:
         masked = np.where(mask, 0, phi_x)
     else:
         masked = phi_x
 
-    return masked / np.sum(masked, axis=1, keepdims=True)
-
+    masked = masked - np.mean(masked, axis=1, keepdims=True)
+    return masked/np.mean(abs(masked), axis=1, keepdims=True)
 
 def wavelet_kernel(
     cell_ids,
     *,
     grid_info: xdggs.HealpixInfo,
-    sigma: float,
     truncate: float = 4.0,
     kernel_size: int | None = None,
     weights_threshold: float | None = None,
@@ -73,12 +73,13 @@ def wavelet_kernel(
         )
 
     cell_ids = np.reshape(cell_ids, (-1,))
-
-    ring = compute_ring(grid_info.level, sigma, truncate, kernel_size)
+    kernel_size=5
+    sigma=1/2**grid_info.level
+    ring = compute_ring(grid_info.level,sigma, truncate, kernel_size)
 
     nb = neighbours(cell_ids, grid_info=grid_info, ring=ring)
     
-    d = angular_distances(nb, grid_info=grid_info)
-    weights = wavelet_function(d, sigma, mask=nb == -1)
+    x,d = coord_distances(nb, grid_info=grid_info)
+    weights = wavelet_function(x, d, sigma, mask=nb == -1)
 
     return create_sparse(cell_ids, nb, weights, weights_threshold)
