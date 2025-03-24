@@ -52,18 +52,26 @@ def _distances(a, b, axis, grid_info):
 
     return angle_between_vectors(vec_a, vec_b, axis=axis)
     
-def _coord(a, b, axis, grid_info):
+def _coord(a, b, axis, grid_info,orientation=0):
     vec_a = cell_ids2vectors(a, grid_info)
 
     mask = b != -1
     vec_b_ = cell_ids2vectors(np.where(mask, b, 0), grid_info)
     vec_b = np.where(mask[..., None], vec_b_, np.nan)
     d=angle_between_vectors(vec_a, vec_b, axis=axis)
-    y=vec_b[:,:,1]-vec_a[:,:,1]
-    z=vec_b[:,:,2]-vec_a[:,:,2]
-    x=((y*np.sqrt(1-vec_a[:,:,1]**2)+z*vec_a[:,:,1])*(vec_a[:,:,2]<0))*2**grid_info.level + \
-        (-(y*np.sqrt(1-vec_a[:,:,1]**2)-z*(vec_a[:,:,1]))*(vec_a[:,:,2]>=0))*2**grid_info.level
-    return x,d
+    dx=vec_b-vec_a
+    theta=np.pi/4
+    X=vec_a[:,0,0]*np.cos(orientation*np.pi/4)+vec_a[:,0,1]*np.sin(orientation*np.pi/4)
+    Y=-vec_a[:,0,0]*np.sin(orientation*np.pi/4)+vec_a[:,0,1]*np.cos(orientation*np.pi/4)
+    Z=vec_a[:,0,2]
+    dx[:,:,0]=(vec_b-vec_a)[:,:,0]*np.cos(orientation*np.pi/4)+(vec_b-vec_a)[:,:,1]*np.sin(orientation*np.pi/4)
+    dx[:,:,1]=-(vec_b-vec_a)[:,:,0]*np.sin(orientation*np.pi/4)+(vec_b-vec_a)[:,:,1]*np.cos(orientation*np.pi/4)
+    
+    x = dx[:,:,1]*Z[:,None]+Y[:,None]*dx[:,:,2]+dx[:,:,1]*X[:,None]*(Z[:,None]>=0)-dx[:,:,1]*X[:,None]*(Z[:,None]<0)
+    
+    x=0.5*np.sqrt(x.shape[1])*x/np.nanstd(x,1)[:,None]
+    
+    return x,d*2**grid_info.level
 
 
 def angular_distances(neighbours, *, grid_info, axis=None):
@@ -99,7 +107,7 @@ def angular_distances(neighbours, *, grid_info, axis=None):
     else:
         return _distances(neighbours[:, :1], neighbours, axis=axis, grid_info=grid_info)
 
-def coord_distances(neighbours, *, grid_info, axis=None):
+def coord_distances(neighbours, *, grid_info, axis=None,orientation=0):
     """compute the angular great-circle distances between neighbours
 
     Parameters
@@ -130,4 +138,4 @@ def coord_distances(neighbours, *, grid_info, axis=None):
             chunks=neighbours.chunks,
         )
     else:
-        return _coord(neighbours[:, :1], neighbours, axis=axis, grid_info=grid_info)
+        return _coord(neighbours[:, :1], neighbours, axis=axis, grid_info=grid_info,orientation=orientation)

@@ -4,7 +4,7 @@ import numpy as np
 import sparse
 
 
-def create_sparse(cell_ids, neighbours, weights, weights_threshold=None):
+def create_sparse(cell_ids, neighbours, weights, weights_threshold=None,is_torch=False,is_complex=False):
     neighbours_ = np.reshape(neighbours, (-1,))
     reshaped_weights = np.reshape(weights, (-1,))
 
@@ -31,6 +31,30 @@ def create_sparse(cell_ids, neighbours, weights, weights_threshold=None):
         coords_, weights_ = dask.compute(coords_, weights_)
 
     shape = (cell_ids.size, all_cell_ids.size)
-    return all_cell_ids, sparse.COO(
-        coords=coords_, data=weights_, shape=shape, fill_value=0
-    )
+    if is_torch:
+        import torch
+        if is_complex:
+            return torch.sparse_coo_tensor(coords_, weights_.real, shape).to_sparse_csr(),torch.sparse_coo_tensor(coords_, weights_.imag, shape).to_sparse_csr()
+        else:
+            return torch.sparse_coo_tensor(coords_, weights_, shape).to_sparse_csr()
+    else:
+        return all_cell_ids, sparse.COO(
+            coords=coords_, data=weights_, shape=shape, fill_value=0
+        )
+
+def create_sparse_update(cell_ids, idx, weights,nside):
+
+
+    row_indices = idx
+    column_indices = cell_ids
+
+    coords = np.stack([row_indices, column_indices], axis=0)
+
+    shape = (12*nside**2, 4*12*nside**2)
+    
+    return np.unique(cell_ids),sparse.COO(
+                coords=coords, 
+                data=weights, 
+                shape=shape, 
+                fill_value=0
+            )
