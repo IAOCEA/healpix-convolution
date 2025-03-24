@@ -109,18 +109,38 @@ class AggregationPadding(Padding):
     agg: callable
     data_indices: _ArrayLike
 
-    def apply(self, data):
-        mask = self.data_indices != -1
+    def apply(self, data,is_torch=False):
+        if is_torch:
+            import torch
+            a = data.clone()
+            I = torch.tensor(self.insert_indices, dtype=torch.long).to(data.device)
+            
+            I, _ = torch.sort(I)  # ensure insert order is ascending
+            
+            n_insert = I.numel()
+            new_len = a.numel() + n_insert
+            result = torch.empty(new_len, dtype=a.dtype, device=a.device)
 
-        new_shape = data.shape[:-1] + self.data_indices.shape
-        data_values_ = np.reshape(
-            data[..., np.reshape(self.data_indices, (-1,))], new_shape
-        )
-        data_values = np.where(mask, data_values_, np.nan)
+            # Create a mask of insertion points
+            mask = torch.ones(new_len, dtype=torch.bool, device=a.device)
+            mask[I + torch.arange(n_insert, device=a.device)] = False  # shift insertion indices to account for earlier inserts
 
-        pad_values = self.agg(data_values, axis=-1)
+            result[mask] = a
+            result[~mask] = data[self.data_indices].mean(dim=[-1])  # insert zeros
+            return result
+            
+        else:
+            mask = self.data_indices != -1
 
-        return np.insert(data, self.insert_indices, pad_values, axis=-1)
+            new_shape = data.shape[:-1] + self.data_indices.shape
+            data_values_ = np.reshape(
+                data[..., np.reshape(self.data_indices, (-1,))], new_shape
+            )
+            data_values = np.where(mask, data_values_, np.nan)
+
+            pad_values = self.agg(data_values, axis=-1)
+
+            return np.insert(data, self.insert_indices, pad_values, axis=-1)
 
 
 @dataclass
