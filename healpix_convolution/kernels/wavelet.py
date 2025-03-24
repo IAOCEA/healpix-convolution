@@ -1,11 +1,11 @@
+import healpy as hp
 import numpy as np
 import xdggs
 
 from healpix_convolution.distances import coord_distances
-from healpix_convolution.kernels.common import create_sparse
-from healpix_convolution.kernels.common import create_sparse_update
+from healpix_convolution.kernels.common import create_sparse, create_sparse_update
 from healpix_convolution.neighbours import neighbours
-import healpy as hp
+
 
 def healpix_resolution(level):
     return np.sqrt(4 * np.pi / (12 * 4**level))
@@ -21,17 +21,18 @@ def compute_ring(level, sigma, truncate, kernel_size):
     return ring if ring >= 1 else 1
 
 
-def wavelet_function(x,distances, sigma, *, mask=None):
-    
-    phi_x = (np.cos(x)+1J*np.sin(x))*np.exp(-0.5*distances**2)
-    
+def wavelet_function(x, distances, sigma, *, mask=None):
+
+    phi_x = (np.cos(x) + 1j * np.sin(x)) * np.exp(-0.5 * distances**2)
+
     if mask is not None:
         masked = np.where(mask, 0, phi_x)
     else:
         masked = phi_x
     masked = masked - np.mean(masked, axis=1, keepdims=True)
-    masked = masked/np.sqrt(np.nansum(abs(masked)**2,1)[:,None])
+    masked = masked / np.sqrt(np.nansum(abs(masked) ** 2, 1)[:, None])
     return masked
+
 
 def wavelet_kernel(
     cell_ids,
@@ -75,17 +76,20 @@ def wavelet_kernel(
         )
 
     cell_ids = np.reshape(cell_ids, (-1,))
-    kernel_size=5
-    sigma=1/2**grid_info.level
-    ring = compute_ring(grid_info.level,sigma, truncate, kernel_size)
+    kernel_size = 5
+    sigma = 1 / 2**grid_info.level
+    ring = compute_ring(grid_info.level, sigma, truncate, kernel_size)
 
     nb = neighbours(cell_ids, grid_info=grid_info, ring=ring)
-        
-    x,d = coord_distances(nb, grid_info=grid_info,orientation=orientation)
-    
+
+    x, d = coord_distances(nb, grid_info=grid_info, orientation=orientation)
+
     weights = wavelet_function(x, d, sigma, mask=nb == -1)
-        
-    return create_sparse(cell_ids, nb, weights, weights_threshold,is_torch=is_torch,is_complex=True)
+
+    return create_sparse(
+        cell_ids, nb, weights, weights_threshold, is_torch=is_torch, is_complex=True
+    )
+
 
 def wavelet_smooth_kernel(
     cell_ids,
@@ -128,17 +132,18 @@ def wavelet_smooth_kernel(
         )
 
     cell_ids = np.reshape(cell_ids, (-1,))
-    kernel_size=5
-    sigma=1/2**grid_info.level
-    ring = compute_ring(grid_info.level,sigma, truncate, kernel_size)
+    kernel_size = 5
+    sigma = 1 / 2**grid_info.level
+    ring = compute_ring(grid_info.level, sigma, truncate, kernel_size)
 
     nb = neighbours(cell_ids, grid_info=grid_info, ring=ring)
-    
-    x,d = coord_distances(nb, grid_info=grid_info)
-    weights = (abs(wavelet_function(x, d, sigma, mask=nb == -1)))**2
-    weights/=np.sum(weights,1)[:,None]
-    return create_sparse(cell_ids, nb, weights, weights_threshold,is_torch=is_torch)
-    
+
+    x, d = coord_distances(nb, grid_info=grid_info)
+    weights = (abs(wavelet_function(x, d, sigma, mask=nb == -1))) ** 2
+    weights /= np.sum(weights, 1)[:, None]
+    return create_sparse(cell_ids, nb, weights, weights_threshold, is_torch=is_torch)
+
+
 def wavelet_upgrade_kernel(
     cell_ids,
     *,
@@ -179,14 +184,16 @@ def wavelet_upgrade_kernel(
         )
 
     cell_ids = np.reshape(cell_ids, (-1,))
-    
-    new_cell_ids=np.tile(cell_ids,4)+np.repeat(np.arange(4),cell_ids.shape[0])
-    
-    t,p=hp.pix2ang(2**(grid_info.level+1),new_cell_ids,nest=True)
-    
-    pix,weights=hp.get_interp_weights(2**(grid_info.level),t,p,nest=True)
-    
-    return create_sparse_update(np.tile(new_cell_ids,4),
-                        pix.flatten(),
-                        weights.flatten(),
-                        2**(grid_info.level))
+
+    new_cell_ids = np.tile(cell_ids, 4) + np.repeat(np.arange(4), cell_ids.shape[0])
+
+    t, p = hp.pix2ang(2 ** (grid_info.level + 1), new_cell_ids, nest=True)
+
+    pix, weights = hp.get_interp_weights(2 ** (grid_info.level), t, p, nest=True)
+
+    return create_sparse_update(
+        np.tile(new_cell_ids, 4),
+        pix.flatten(),
+        weights.flatten(),
+        2 ** (grid_info.level),
+    )

@@ -52,9 +52,12 @@ def wavelet_kernel(
     attrs = {
         "kernel_type": "gaussian",
         "method": "continuous",
-        "sigma": 1/2**grid_info.level,
+        "sigma": 1 / 2**grid_info.level,
         "ring": compute_ring(
-            grid_info.level, kernel_size=kernel_size, truncate=truncate, sigma=1/2**grid_info.level
+            grid_info.level,
+            kernel_size=kernel_size,
+            truncate=truncate,
+            sigma=1 / 2**grid_info.level,
         ),
     } | size_param
 
@@ -114,9 +117,12 @@ def wavelet_smooth_kernel(
     attrs = {
         "kernel_type": "gaussian",
         "method": "continuous",
-        "sigma": 1/2**grid_info.level,
+        "sigma": 1 / 2**grid_info.level,
         "ring": compute_ring(
-            grid_info.level, kernel_size=kernel_size, truncate=truncate, sigma=1/2**grid_info.level
+            grid_info.level,
+            kernel_size=kernel_size,
+            truncate=truncate,
+            sigma=1 / 2**grid_info.level,
         ),
     } | size_param
 
@@ -129,8 +135,8 @@ def wavelet_smooth_kernel(
         },
         attrs=attrs,
     )
-    
-    
+
+
 def wavelet_upgrade_kernel(
     cell_ids,
     truncate: float = 4.0,
@@ -176,9 +182,12 @@ def wavelet_upgrade_kernel(
     attrs = {
         "kernel_type": "gaussian",
         "method": "continuous",
-        "sigma": 1/2**grid_info.level,
+        "sigma": 1 / 2**grid_info.level,
         "ring": compute_ring(
-            grid_info.level, kernel_size=kernel_size, truncate=truncate, sigma=1/2**grid_info.level
+            grid_info.level,
+            kernel_size=kernel_size,
+            truncate=truncate,
+            sigma=1 / 2**grid_info.level,
         ),
     } | size_param
 
