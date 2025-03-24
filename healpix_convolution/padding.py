@@ -133,7 +133,6 @@ class AggregationPadding(Padding):
             )
 
             result[mask] = a
-<<<<<<< HEAD
             
             wtmp=torch.tensor(self.data_indices!=-1,dtype=data.dtype,device=data.device)
             vtmp=data[self.data_indices]*wtmp
@@ -141,11 +140,6 @@ class AggregationPadding(Padding):
             result[~mask] = vtmp.sum(dim=[-1])/wtmp.sum(dim=[-1]) # insert zeros
             
             return result
-=======
-            result[~mask] = data[self.data_indices].mean(dim=[-1])  # insert zeros
-            return result
-
->>>>>>> af5e7abb8b713feeaadf7bf0cdd31e83a7c048d8
         else:
             mask = self.data_indices != -1
 
