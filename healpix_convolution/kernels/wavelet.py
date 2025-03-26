@@ -81,6 +81,7 @@ def wavelet_kernel(
     ring = compute_ring(grid_info.level, sigma, truncate, kernel_size)
 
     nb = neighbours(cell_ids, grid_info=grid_info, ring=ring)
+    
 
     x, d = coord_distances(nb, grid_info=grid_info, orientation=orientation)
 
@@ -137,8 +138,9 @@ def wavelet_smooth_kernel(
     ring = compute_ring(grid_info.level, sigma, truncate, kernel_size)
 
     nb = neighbours(cell_ids, grid_info=grid_info, ring=ring)
-
+    
     x, d = coord_distances(nb, grid_info=grid_info)
+    
     weights = (abs(wavelet_function(x, d, sigma, mask=nb == -1))) ** 2
     weights /= np.sum(weights, 1)[:, None]
     return create_sparse(cell_ids, nb, weights, weights_threshold, is_torch=is_torch)
