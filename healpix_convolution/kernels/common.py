@@ -38,7 +38,7 @@ def create_sparse(
         coords_, weights_ = dask.compute(coords_, weights_)
 
     shape = (cell_ids.size, all_cell_ids.size)
-    
+
     if is_torch:
         import torch
 
