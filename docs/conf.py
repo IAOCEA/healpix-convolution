@@ -1,3 +1,8 @@
+# dependency configuration
+import matplotlib
+
+matplotlib.set_logger("critical")
+
 # -- Project information -----------------------------------------------------
 import datetime as dt
 
