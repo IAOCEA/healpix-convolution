@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+title: healpix-convolution
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: "Magin"
+    given-names: "Justus"
+    orcid: "https://orcid.org/0000-0002-4254-8002"
+  - family-names: "Cap"
+    given-names: "Etienne"
+    orcid: "https://orcid.org/0009-0007-0360-0692"
+repository-code: "https://github.com/IAOCEA/healpix-convolution"
+url: "https://healpix-convolution.readthedocs.io"
+keywords:
+  - xarray
+license: Apache-2.0
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.15050588
