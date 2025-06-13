@@ -17,7 +17,7 @@ readme = "README.md"
 dependencies = [
   "numpy",
   "cdshealpix",
-  "healpix-geo",
+  "healpix-geo>=0.0.3",
   "xdggs",
   "sparse",
   "opt_einsum",
