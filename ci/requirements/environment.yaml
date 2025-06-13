@@ -13,8 +13,8 @@ dependencies:
   - xarray
   - opt_einsum
   - matplotlib-base
+  - xdggs
+  - cdshealpix
   - pip
   - pip:
-      - xdggs
-      - cdshealpix
       - healpix-geo
