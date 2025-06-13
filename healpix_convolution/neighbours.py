@@ -34,13 +34,13 @@ def neighbours(cell_ids, *, grid_info, ring=1):
         )
 
     if grid_info.indexing_scheme == "nested":
-        neighbours_disk = healpix_geo.nested.neighbours_disk
+        kth_neighbourhood = healpix_geo.nested.kth_neighbourhood
     elif grid_info.indexing_scheme == "ring":
-        neighbours_disk = healpix_geo.ring.neighbours_disk
+        kth_neighbourhood = healpix_geo.ring.kth_neighbourhood
     else:
         raise ValueError(f"unsupported indexing scheme: '{grid_info.indexing_scheme}'")
 
-    f = partial(neighbours_disk, depth=grid_info.level, ring=ring)
+    f = partial(kth_neighbourhood, depth=grid_info.level, ring=ring)
     if isinstance(cell_ids, dask_array_type):
         n_neighbours = (2 * ring + 1) ** 2
         return da.map_blocks(
