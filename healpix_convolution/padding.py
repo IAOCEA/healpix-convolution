@@ -36,25 +36,48 @@ class Padding:
 class ConstantPadding(Padding):
     constant_value: _ScalarType
 
-    def apply(self, data):
-        common_dtype = np.result_type(data, self.constant_value)
+    def apply(self, data, is_torch=False):
+        if is_torch:
+            import torch
 
-        if hasattr(data, "chunks"):
-            import dask.array as da
+            a = data.clone()
+            I = torch.tensor(self.insert_indices, dtype=torch.long).to(data.device)
 
-            values = da.full_like(
-                data,
-                shape=self.insert_indices.shape,
-                dtype=common_dtype,
-                fill_value=self.constant_value,
-                chunks=data.chunks[0][-1],
+            I, _ = torch.sort(I)  # ensure insert order is ascending
+
+            n_insert = I.numel()
+            new_len = a.numel() + n_insert
+            result = torch.empty(new_len, dtype=a.dtype, device=a.device)
+
+            # Create a mask of insertion points
+            mask = torch.ones(new_len, dtype=torch.bool, device=a.device)
+            mask[I + torch.arange(n_insert, device=a.device)] = (
+                False  # shift insertion indices to account for earlier inserts
             )
-        else:
-            values = self.constant_value
 
-        return np.insert(
-            data.astype(common_dtype), self.insert_indices, values, axis=-1
-        )
+            result[mask] = a
+            result[~mask] = 0  # insert zeros
+            return result
+
+        else:
+            common_dtype = np.result_type(data, self.constant_value)
+
+            if hasattr(data, "chunks"):
+                import dask.array as da
+
+                values = da.full_like(
+                    data,
+                    shape=self.insert_indices.shape,
+                    dtype=common_dtype,
+                    fill_value=self.constant_value,
+                    chunks=data.chunks[0][-1],
+                )
+            else:
+                values = self.constant_value
+
+            return np.insert(
+                data.astype(common_dtype), self.insert_indices, values, axis=-1
+            )
 
 
 @dataclass
@@ -90,18 +113,54 @@ class AggregationPadding(Padding):
     agg: callable
     data_indices: _ArrayLike
 
-    def apply(self, data):
-        mask = self.data_indices != -1
+    def apply(self, data, is_torch=False):
+        if is_torch:
+            import torch
 
-        new_shape = data.shape[:-1] + self.data_indices.shape
-        data_values_ = np.reshape(
-            data[..., np.reshape(self.data_indices, (-1,))], new_shape
-        )
-        data_values = np.where(mask, data_values_, np.nan)
+            a = data.clone()
+            I = torch.tensor(self.insert_indices, dtype=torch.long).to(data.device)
 
-        pad_values = self.agg(data_values, axis=-1)
+            I, _ = torch.sort(I)  # ensure insert order is ascending
 
-        return np.insert(data, self.insert_indices, pad_values, axis=-1)
+            n_insert = I.numel()
+            new_len = a.numel() + n_insert
+            result = torch.empty(new_len, dtype=a.dtype, device=a.device)
+
+            # Create a mask of insertion points
+            mask = torch.ones(new_len, dtype=torch.bool, device=a.device)
+            mask[I + torch.arange(n_insert, device=a.device)] = (
+                False  # shift insertion indices to account for earlier inserts
+            )
+
+            result[mask] = a
+
+            self.data_indices[self.data_indices >= data.shape[0]] = -1
+
+            wtmp = torch.tensor(
+                self.data_indices != -1, dtype=data.dtype, device=data.device
+            )
+
+            vtmp = wtmp.clone()
+
+            vtmp[self.data_indices != -1] = data[
+                self.data_indices[self.data_indices != -1]
+            ]
+
+            result[~mask] = vtmp.sum(dim=[-1]) / wtmp.sum(dim=[-1])  # insert zeros
+
+            return result
+        else:
+            mask = self.data_indices != -1
+
+            new_shape = data.shape[:-1] + self.data_indices.shape
+            data_values_ = np.reshape(
+                data[..., np.reshape(self.data_indices, (-1,))], new_shape
+            )
+            data_values = np.where(mask, data_values_, np.nan)
+
+            pad_values = self.agg(data_values, axis=-1)
+
+            return np.insert(data, self.insert_indices, pad_values, axis=-1)
 
 
 @dataclass
@@ -114,7 +173,7 @@ class DataPadding(Padding):
         return np.insert(data, self.insert_indices, pad_values, axis=-1)
 
 
-def constant_mode(cell_ids, neighbours, grid_info, constant_value):
+def constant_mode(cell_ids, neighbours, grid_info, constant_value, is_torch=False):
     all_cell_ids = np.unique(neighbours)
     if all_cell_ids[0] == -1:
         all_cell_ids = all_cell_ids[1:]
@@ -133,22 +192,22 @@ def constant_mode(cell_ids, neighbours, grid_info, constant_value):
     )
 
 
-def linear_ramp_mode(cell_ids, neighbours, grid_info, end_value):
+def linear_ramp_mode(cell_ids, neighbours, grid_info, end_value, is_torch=False):
     # algorithm:  for each padded cell find the closest edge cell and the distance
     pass
 
 
-def edge_mode(cell_ids, neighbours, grid_info):
+def edge_mode(cell_ids, neighbours, grid_info, is_torch=False):
     # algorithm: for each padded cell find the closest edge cell
     pass
 
 
-def reflect_mode(cell_ids, neighbours, grid_info):
+def reflect_mode(cell_ids, neighbours, grid_info, is_torch=False):
     # algorithm: for each padded cell, find the closest edge cell and the distance, then take the index of the cell that in the same distance and direction as the edge cell from the padded cell
     pass
 
 
-def agg_mode(cell_ids, neighbours, grid_info, *, agg, ring):
+def agg_mode(cell_ids, neighbours, grid_info, *, agg, ring, is_torch=False):
     all_cell_ids = np.unique(neighbours)
     new_cell_ids = np.setdiff1d(
         all_cell_ids, np.concatenate((np.array([-1]), cell_ids))
