@@ -54,7 +54,6 @@ And we can compare the two variables:
 ---
 stderr: true
 ---
-
 fig, axes = plt.subplots(
     nrows=2, ncols=2, figsize=(14, 9), subplot_kw={"projection": ccrs.Robinson()}
 )
@@ -122,7 +121,6 @@ Again, we can look at the result:
 ---
 stderr: true
 ---
-
 fig, axes = plt.subplots(
     nrows=2, ncols=2, figsize=(14, 9), subplot_kw={"projection": ccrs.Robinson()}
 )
