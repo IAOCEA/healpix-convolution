@@ -47,7 +47,7 @@ def convolve(
             weights,
             # This dimension will be "contracted"
             # or summed over after multiplying by the weights
-            dims=src_dims,
+            dim=src_dims,
         )
 
     if ds.sizes["cells"] != kernel.sizes["input_cells"]:
@@ -59,9 +59,15 @@ def convolve(
         )
         ds = padder.apply(ds)
 
+    unrelated = ds.drop_vars(
+        [name for name, var in ds.variables.items() if "cells" in var.dims]
+    )
+
     return (
         ds.rename_dims({dim: "input_cells"})
         .map(_convolve, weights=kernel)
         .rename_dims({"output_cells": dim})
         .rename_vars({"output_cell_ids": "cell_ids"})
+        .merge(unrelated)
+        .dggs.decode()
     )

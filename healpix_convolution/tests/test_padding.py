@@ -171,6 +171,14 @@ class TestArray:
         np.testing.assert_equal(padder.cell_ids, expected_cell_ids)
         np.testing.assert_equal(actual, expected_data)
 
+    def test_pad_corner(self):
+        grid_info = xdggs.healpix.HealpixInfo(level=1, indexing_scheme="nested")
+        cell_ids = np.array([2, 3], dtype="uint64")
+
+        padder = padding.pad(cell_ids, grid_info=grid_info, ring=1, mode="mean")
+
+        assert -1 not in padder.cell_ids
+
 
 class TestXarray:
     @pytest.mark.parametrize(
@@ -316,11 +324,17 @@ class TestXarray:
 
         ds = xr.Dataset(
             {"data": ("cells", data_)},
-            coords={"cell_ids": ("cells", cell_ids, grid_info.to_dict())},
+            coords={
+                "cell_ids": ("cells", cell_ids, grid_info.to_dict()),
+                "crs": ((), 0),
+            },
         ).pipe(xdggs.decode)
         expected_ds = xr.Dataset(
             {"data": ("cells", expected_data_)},
-            coords={"cell_ids": ("cells", expected_cell_ids, grid_info.to_dict())},
+            coords={
+                "cell_ids": ("cells", expected_cell_ids, grid_info.to_dict()),
+                "crs": ((), 0),
+            },
         ).pipe(xdggs.decode)
 
         if type_ is xr.Dataset:
