@@ -324,11 +324,17 @@ class TestXarray:
 
         ds = xr.Dataset(
             {"data": ("cells", data_)},
-            coords={"cell_ids": ("cells", cell_ids, grid_info.to_dict())},
+            coords={
+                "cell_ids": ("cells", cell_ids, grid_info.to_dict()),
+                "crs": ((), 0),
+            },
         ).pipe(xdggs.decode)
         expected_ds = xr.Dataset(
             {"data": ("cells", expected_data_)},
-            coords={"cell_ids": ("cells", expected_cell_ids, grid_info.to_dict())},
+            coords={
+                "cell_ids": ("cells", expected_cell_ids, grid_info.to_dict()),
+                "crs": ((), 0),
+            },
         ).pipe(xdggs.decode)
 
         if type_ is xr.Dataset:

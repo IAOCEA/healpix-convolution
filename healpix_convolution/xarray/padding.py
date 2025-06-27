@@ -20,17 +20,26 @@ class Padding:
     padding: padding.Padding
 
     def _apply_one(self, arr):
-        return xr.DataArray(self.padding.apply(arr.data), dims="cells")
+        return xr.DataArray(
+            self.padding.apply(arr.data), dims=arr.dims, attrs=arr.attrs
+        )
 
     def _apply(self, ds):
-        to_drop = [name for name, coord in ds.coords.items() if "cells" in coord.dims]
+        to_drop = [
+            name for name, coord in ds.variables.items() if "cells" in coord.dims
+        ]
+        to_process = [name for name in to_drop if name not in ds.coords]
+
         cell_ids = xr.Variable(
             "cells", self.padding.cell_ids, attrs=ds["cell_ids"].attrs
         )
 
-        return (
-            ds.drop_vars(to_drop).map(self._apply_one).assign_coords(cell_ids=cell_ids)
-        )
+        keep = ds.drop_vars(to_drop)
+
+        processed = ds[to_process].map(self._apply_one).assign_coords(cell_ids=cell_ids)
+        result = keep.merge(processed)
+
+        return result
 
     def apply(self, obj):
         """Apply the cached padding to the data
