@@ -53,12 +53,12 @@ exclude_lines = ["pragma: no cover", "if TYPE_CHECKING"]
 [tool.ruff]
 builtins = ["ellipsis"]
 exclude = [
-    ".git",
-    ".eggs",
-    "build",
-    "dist",
-    "__pycache__",
-    "docs",
+  ".git",
+  ".eggs",
+  "build",
+  "dist",
+  "__pycache__",
+  "docs",
 ]
 target-version = "py311"
 
@@ -70,19 +70,19 @@ line-length = 100
 # E501: line too long - let black worry about that
 # E731: do not assign a lambda expression, use a def
 ignore = [
-    "E402",
-    "E501",
-    "E731",
+  "E402",
+  "E501",
+  "E731",
 ]
 select = [
-    "F",  # Pyflakes
-    "E",  # Pycodestyle
-    "I",  # isort
-    "UP", # Pyupgrade
-    "TID", # tidy imports
+  "F",   # Pyflakes
+  "E",   # Pycodestyle
+  "I",   # isort
+  "UP",  # Pyupgrade
+  "TID", # tidy imports
 ]
 extend-safe-fixes = [
-    "TID252",  # absolute imports
+  "TID252", # absolute imports
 ]
 fixable = ["I", "TID"]
 
