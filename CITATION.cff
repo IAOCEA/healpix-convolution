@@ -9,6 +9,12 @@ authors:
   - family-names: "Cap"
     given-names: "Etienne"
     orcid: "https://orcid.org/0009-0007-0360-0692"
+  - family-names: "Delouis"
+    given-names: "Jean-Marc"
+    orcid: "https://orcid.org/0000-0002-0713-1658"
+  - family-names: "Odaka"
+    given-names: "Tina"
+    orcid: "https://orcid.org/0000-0002-1500-0156"
 repository-code: "https://github.com/IAOCEA/healpix-convolution"
 url: "https://healpix-convolution.readthedocs.io"
 keywords:
