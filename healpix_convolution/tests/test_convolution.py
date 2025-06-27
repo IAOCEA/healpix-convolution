@@ -44,3 +44,45 @@ def test_numpy_convolve(data):
     expected = np.mean(windows, axis=-1)
 
     np.testing.assert_allclose(actual, expected)
+
+
+def test_xarray_convolve_unrelated_vars():
+    import xarray as xr
+
+    from healpix_convolution.xarray import convolution as xr_convolution
+
+    dense_kernel = (
+        np.array(
+            [
+                [1, 1, 0, 0, 1],
+                [1, 1, 1, 0, 0],
+                [0, 1, 1, 1, 0],
+                [0, 0, 1, 1, 1],
+                [1, 0, 0, 1, 1],
+            ]
+        )
+        / 3
+    )
+
+    kernel_arr = sparse.COO.from_numpy(dense_kernel, fill_value=0)
+    grid_info = {"grid_name": "healpix", "level": 5, "indexing_scheme": "nested"}
+    cell_ids = np.array([0, 1, 2, 3, 4], dtype="uint64")
+
+    kernel = xr.DataArray(
+        kernel_arr,
+        dims=["output_cells", "input_cells"],
+        coords={
+            "input_cell_ids": ("input_cells", cell_ids, grid_info),
+            "output_cell_ids": ("output_cells", cell_ids, grid_info),
+        },
+    )
+
+    data = np.ones((20, kernel.shape[1]), dtype=float)
+    ds = xr.Dataset(
+        {"data": (["time", "cells"], data)},
+        coords={"cell_ids": ("cells", cell_ids), "time": np.arange(20, 40)},
+    ).dggs.decode(grid_info)
+
+    actual = xr_convolution.convolve(ds, kernel, mode="mean")
+
+    assert set(actual.variables) == set(ds.variables)
