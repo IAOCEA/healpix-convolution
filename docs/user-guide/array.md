@@ -53,14 +53,11 @@ On a map:
 ---
 stderr: true
 ---
-
 fig, axes = plt.subplots(
     ncols=2, figsize=(16, 12), subplot_kw={"projection": ccrs.Robinson()}
 )
 
-plot_healpix(
-    data, cell_ids, ax=axes[0], grid_info=grid_info, features=["coastlines"]
-)
+plot_healpix(data, cell_ids, ax=axes[0], grid_info=grid_info, features=["coastlines"])
 plot_healpix(
     convolved,
     cell_ids,
@@ -120,7 +117,6 @@ Again, we can look at the result:
 ---
 stderr: true
 ---
-
 fig, axes = plt.subplots(
     ncols=2, figsize=(16, 12), subplot_kw={"projection": ccrs.Robinson()}
 )
