@@ -47,7 +47,7 @@ def convolve(
             weights,
             # This dimension will be "contracted"
             # or summed over after multiplying by the weights
-            dims=src_dims,
+            dim=src_dims,
         )
 
     if ds.sizes["cells"] != kernel.sizes["input_cells"]:
