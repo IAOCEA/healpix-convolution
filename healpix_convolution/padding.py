@@ -165,7 +165,7 @@ def agg_mode(cell_ids, neighbours, grid_info, *, agg, ring):
     insert_indices = np.searchsorted(cell_ids, new_cell_ids)
 
     return AggregationPadding(
-        cell_ids=all_cell_ids,
+        cell_ids=np.setdiff1d(all_cell_ids, np.array([-1])),
         insert_indices=insert_indices,
         grid_info=grid_info,
         agg=agg,

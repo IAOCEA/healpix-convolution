@@ -171,6 +171,14 @@ class TestArray:
         np.testing.assert_equal(padder.cell_ids, expected_cell_ids)
         np.testing.assert_equal(actual, expected_data)
 
+    def test_pad_corner(self):
+        grid_info = xdggs.healpix.HealpixInfo(level=1, indexing_scheme="nested")
+        cell_ids = np.array([2, 3], dtype="uint64")
+
+        padder = padding.pad(cell_ids, grid_info=grid_info, ring=1, mode="mean")
+
+        assert -1 not in padder.cell_ids
+
 
 class TestXarray:
     @pytest.mark.parametrize(
