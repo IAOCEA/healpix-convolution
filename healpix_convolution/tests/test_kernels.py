@@ -206,6 +206,10 @@ class TestGaussian:
                     "kernel_size": 3,
                 },
             ),
+            (
+                np.array([1]),
+                {"level": 1, "indexing_scheme": "nested", "sigma": 0.1},
+            ),
         ),
     )
     def test_gaussian_kernel(self, cell_ids, kwargs):

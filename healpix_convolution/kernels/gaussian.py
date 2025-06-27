@@ -67,7 +67,7 @@ def gaussian_kernel(
     -----
     no dask support, yet
     """
-    if cell_ids.ndim != 1 or len([s for s in cell_ids.shape if s != 1]) != 1:
+    if cell_ids.ndim != 1 or len([s for s in cell_ids.shape if s != 1]) not in (0, 1):
         raise ValueError(
             f"cell ids must be 1-dimensional, but shape is: {cell_ids.shape}"
         )
